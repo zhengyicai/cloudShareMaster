@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qzi.cms.server.mapper.UseEquipmentMapper">
+   <!-- 条件分页查询 -->
+	<select id="findAll" resultType="UseEquipmentVo" parameterType="String">
+		SELECT ue.*,ub.buildingName,uc.communityName from use_equipment ue 
+			LEFT JOIN use_community uc on ue.communityId = uc.id 
+			LEFT JOIN use_building ub on ue.buildingId = ub.id 
+		<where>
+			ue.communityId in (select communityId from use_community_user where userId=#{uid})
+			<if test="criteria != null and criteria !=''">
+				<bind name="pun" value="'%'+_parameter.criteria+'%'"/>
+				and (ue.equipmentId like #{pun} or ue.equipmentName like #{pun})
+			</if>
+		</where>
+		order by createTime desc
+	</select>
+   
+	<select id="findCount" resultType="long" parameterType="String">
+		SELECT count(1) from use_equipment 
+		<where>
+			communityId in (select communityId from use_community_user where userId=#{uid})
+			<if test="criteria != null and criteria !=''">
+				<bind name="pun" value="'%'+_parameter.criteria+'%'"/>
+				and (equipmentId like #{pun} or equipmentName like #{pun})
+			</if>
+		</where>
+	</select>
+</mapper>

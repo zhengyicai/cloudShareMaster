@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qzi.cms.server.mapper.UseCommunityMapper">
+    <!-- 注册界面获取小区数据 -->
+    <select id="regfindAll" resultType="UseCommunityPo" parameterType="UseCommunityPo">
+        SELECT id,communityName,communityNo  from  use_community
+        <where>
+            1=1
+            <if test="model.provinceCode != null and model.provinceCode !=''">
+                and provinceCode = #{model.provinceCode}
+            </if>
+            <if test="model.cityCode != null and model.cityCode !=''">
+                and cityCode = #{model.cityCode}
+            </if>
+            <if test="model.areaCode != null and model.areaCode !=''">
+                and areaCode = #{model.areaCode}
+            </if>
+        </where>
+        order by createTime desc
+    </select>
+
+    <select id="regfindCount" resultType="Integer" parameterType="UseCommunityPo">
+        SELECT count(1) from  use_community
+        <where>
+            1=1
+            <if test="model.provinceCode != null and model.provinceCode !=''">
+                and provinceCode = #{model.provinceCode}
+            </if>
+            <if test="model.cityCode != null and model.cityCode !=''">
+                and cityCode = #{model.cityCode}
+            </if>
+            <if test="model.areaCode != null and model.areaCode !=''">
+                and areaCode = #{model.areaCode}
+            </if>
+        </where>
+    </select>
+
+
+</mapper>

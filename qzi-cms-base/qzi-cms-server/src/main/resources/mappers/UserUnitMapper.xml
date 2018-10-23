@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qzi.cms.server.mapper.UseUnitMapper">
+    <!-- 注册界面获取小区数据 -->
+    <select id="findAll" resultType="SysUnitVo" parameterType="String">
+        SELECT  u.*,b.buildingNo,b.buildingName   from  use_unit u left join use_building b on u.buildingId = b.id
+        <where>
+            1=1
+            <if test="model.id != null and model.id !=''">
+                and u.id = #{model.id}
+            </if>
+            <if test="model.communityId != null and model.communityId !=''">
+                and u.communityId = #{model.communityId}
+            </if>
+            <if test="model.buildingId != null and model.buildingId !=''">
+                and u.buildingId = #{model.buildingId}
+            </if>
+
+            <if test="model.unitName != null and model.unitName !=''">
+                and u.unitNo = #{model.unitName}
+            </if>
+        </where>
+        order by u.createTime desc
+    </select>
+
+    
+
+
+</mapper>

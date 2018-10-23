@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.qzi.cms.server.mapper.UseResidentMapper">
+   <!-- 条件分页查询 -->
+	<select id="findAll" resultType="UseResidentVo" parameterType="String">
+		SELECT ur.*,uc.communityName,uc.id communityId,ucr.state from use_resident ur,use_community_resident ucr,use_community uc,use_community_user ucu 
+		<where>
+			ucr.communityId = uc.id and uc.id = ucu.communityId and ur.id = ucr.residentId and ucu.userId=#{uid}
+			<if test="criteria != null and criteria !=''">
+				<bind name="pun" value="'%'+_parameter.criteria+'%'"/>
+				and (ur.name like #{pun} or ur.mobile like #{pun})
+			</if>
+		</where>
+		order by createTime desc
+	</select>
+   
+	<select id="findCount" resultType="long" parameterType="String">
+		SELECT count(1) from use_resident ur,use_community_resident ucr,use_community uc,use_community_user ucu 
+		<where>
+			ucr.communityId = uc.id and uc.id = ucu.communityId and ur.id = ucr.residentId and ucu.userId=#{uid}
+			<if test="criteria != null and criteria !=''">
+				<bind name="pun" value="'%'+_parameter.criteria+'%'"/>
+				and (ur.name like #{pun} or ur.mobile like #{pun})
+			</if>
+		</where>
+	</select>
+	
+	<select id="findAllByCriteria" resultType="UseResidentVo" parameterType="String">
+		SELECT ur.* from use_resident ur LEFT JOIN use_community_resident ucr ON ucr.residentId = ur.id 
+		<where>
+			ucr.residentId is null
+			<if test="criteria != null and criteria !=''">
+				<bind name="pun" value="'%'+_parameter.criteria+'%'"/>
+				and (ur.name like #{pun} or ur.mobile like #{pun})
+			</if>
+		</where>
+		order by createTime desc
+	</select>
+   
+	<select id="findCountByCriteria" resultType="long" parameterType="String">
+		SELECT count(1) from use_resident ur LEFT JOIN use_community_resident ucr ON ucr.residentId = ur.id 
+		<where>
+			ucr.residentId is null
+			<if test="criteria != null and criteria !=''">
+				<bind name="pun" value="'%'+_parameter.criteria+'%'"/>
+				and (ur.name like #{pun} or ur.mobile like #{pun})
+			</if>
+		</where>
+	</select>
+	
+	<select id="findResident" resultType="String" parameterType="UseMessageVo">
+		SELECT ur.id from use_resident ur,use_resident_room urr,use_room rm 
+		<where>
+			ur.id = urr.residentId and urr.roomId = rm .id and urr.communityId=#{vo.communityId}
+			<if test="vo.buildingId != null and vo.buildingId !=''">
+				and rm.buildingId = #{vo.buildingId}
+			</if>
+			<if test="vo.unitId != null and vo.unitId !=''">
+				and rm.unitId = #{vo.unitId}
+			</if>
+			<if test="vo.roomId != null and vo.roomId !=''">
+				and rm.id = #{vo.roomId}
+			</if>
+		</where>
+	</select>
+</mapper>
