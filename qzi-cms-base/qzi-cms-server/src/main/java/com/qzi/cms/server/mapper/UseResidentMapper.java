@@ -94,6 +94,12 @@ public interface UseResidentMapper  extends BaseMapper<UseResidentPo>{
 	@Select("update use_resident set password=#{password},salt=#{salt} where mobile=#{mobile}")
 	public void updatePwd(@Param("mobile") String mobile,@Param("password") String password,@Param("salt") String salt);
 
+	@Select("update use_resident set name=#{name} where mobile=#{mobile}")
+	public void updateName(@Param("name") String name,@Param("mobile") String mobile);
+
+
+
+
 
 	/**
 	 * 查找房间对应的用户

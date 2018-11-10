@@ -34,4 +34,10 @@ public class UnitServiceImpl implements UnitService {
     public List<SysUnitVo> findAll(SysUnitPo sysUnitPo) {
         return useUnitMapper.findAll(sysUnitPo);
     }
+
+    @Override
+    public void update(SysUnitPo sysUnitPo) {
+
+        useUnitMapper.update(sysUnitPo);
+    }
 }

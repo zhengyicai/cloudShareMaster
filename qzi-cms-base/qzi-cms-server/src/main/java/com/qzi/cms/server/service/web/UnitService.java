@@ -11,6 +11,6 @@ import java.util.List;
 public interface UnitService {
     public void  insert(SysUnitPo sysUnitPo);
     public List<SysUnitVo> findAll(SysUnitPo sysUnitPo);
-
+    public void update(SysUnitPo sysUnitPo);
 
 }

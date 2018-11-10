@@ -132,6 +132,7 @@ public class UserServiceImpl implements UserService {
 	public void update(SysUserVo userVo) throws Exception {
 		SysUserPo userPo = userMapper.selectByPrimaryKey(userVo.getId());
 		userPo.setUserName(userVo.getUserName());
+		userPo.setLoginName(userVo.getLoginName());
 		userPo.setMobile(userVo.getMobile());
 		userPo.setRoleId(userVo.getRoleId());
 		userPo.setRoleName(userVo.getRoleName());

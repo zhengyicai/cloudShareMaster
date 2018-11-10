@@ -15,6 +15,7 @@ import com.qzi.cms.common.vo.UseBuildingVo;
 import com.qzi.cms.server.base.BaseMapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.apache.ibatis.session.RowBounds;
 
 import java.util.List;
@@ -29,6 +30,12 @@ public interface UseUnitMapper extends BaseMapper<SysUnitPo>{
 
 
 	public List<SysUnitVo> findAll(@Param("model") SysUnitPo SysUnitPo);
+
+	@Select("select * from use_unit where id = #{id}")
+	public SysUnitPo findOne(@Param("id") String id);
+
+	@Update("update use_unit set state = #{model.state} where id = #{model.id}")
+	public void update(@Param("model") SysUnitPo SysUnitPo);
 
 
 

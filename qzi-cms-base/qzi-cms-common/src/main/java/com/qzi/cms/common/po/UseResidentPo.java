@@ -72,6 +72,17 @@ public class UseResidentPo implements Serializable{
 
 	private String remark;
 
+	private String state;
+
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
+	}
+
 	public String getRemark() {
 		return remark;
 	}

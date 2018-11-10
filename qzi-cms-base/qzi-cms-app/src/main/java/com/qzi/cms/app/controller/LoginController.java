@@ -9,6 +9,10 @@ package com.qzi.cms.app.controller;
 
 import javax.annotation.Resource;
 
+import com.qzi.cms.common.po.UseResidentPo;
+import com.qzi.cms.common.util.CryptUtils;
+import com.qzi.cms.server.service.app.RegisterService;
+import com.qzi.cms.server.service.common.CommonService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,6 +40,13 @@ import com.qzi.cms.server.service.app.LoginService;
 public class LoginController {
 	@Resource(name="appLogin")
 	private LoginService loginService;
+
+	@Resource
+	private RegisterService registerService;
+	@Resource
+	private CommonService commonService;
+
+
 
 	@PostMapping("/loginIn")
 	@SystemControllerLog(description="用户登录")
@@ -95,6 +106,66 @@ public class LoginController {
 		} catch (Exception ex) {
 			respBody.add(RespCodeEnum.ERROR.getCode(), "找回密码失败");
 			LogUtils.error("找回密码失败！",ex);
+		}
+		return respBody;
+	}
+
+
+	@PostMapping("/updatePwd")
+	@SystemControllerLog(description="修改密码")
+	public RespBody updatePwd(@RequestBody UseResidentVo residentVo) {
+		// 创建返回对象
+		RespBody respBody = new RespBody();
+		try {
+
+
+			UseResidentVo vo = commonService.findResident();
+
+			   String lowPwd = CryptUtils.hmacSHA1Encrypt(residentVo.getOldPwd(),vo.getSalt());
+			   if(vo !=null){
+				   if(lowPwd.equals(vo.getPassword())){
+				   		residentVo.setMobile(vo.getMobile());
+					   loginService.updatePwd(residentVo);
+					   respBody.add(RespCodeEnum.SUCCESS.getCode(),"修改密码成功");
+				   }else{
+					   respBody.add(RespCodeEnum.ERROR.getCode(), "用户原密码输入有误");
+				   }
+			   }
+
+		} catch (CommException ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), ex.getMessage());
+			LogUtils.error("修改密码失败！",ex);
+		} catch (Exception ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), "修改密码失败");
+			LogUtils.error("修改密码失败！",ex);
+		}
+		return respBody;
+	}
+
+
+	@PostMapping("/updateName")
+	@SystemControllerLog(description="修改名称")
+	public RespBody updateName(@RequestBody UseResidentVo residentVo) {
+		// 创建返回对象
+		RespBody respBody = new RespBody();
+		try {
+
+
+			UseResidentVo vo = commonService.findResident();
+
+			if(vo !=null){
+
+					residentVo.setMobile(vo.getMobile());
+					loginService.updateName(residentVo);
+					respBody.add(RespCodeEnum.SUCCESS.getCode(),"修改昵称成功");
+			}
+
+		} catch (CommException ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), ex.getMessage());
+			LogUtils.error("修改昵称失败！",ex);
+		} catch (Exception ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), "修改昵称失败");
+			LogUtils.error("修改昵称失败！",ex);
 		}
 		return respBody;
 	}

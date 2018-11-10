@@ -184,4 +184,9 @@ public class ResidentServiceImpl implements ResidentService {
 		return residentRoomMapper.existsOwner(residentRoomVo);
 	}
 
+	@Override
+	public boolean exist(String mobile) {
+		return residentMapper.existsMobile(mobile);
+	}
+
 }

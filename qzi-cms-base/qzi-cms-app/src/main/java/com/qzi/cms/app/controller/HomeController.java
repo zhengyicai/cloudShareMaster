@@ -9,6 +9,10 @@ package com.qzi.cms.app.controller;
 
 import javax.annotation.Resource;
 
+import com.qzi.cms.common.vo.ParamObjectVo;
+import com.qzi.cms.common.vo.SysParameterVo;
+import com.qzi.cms.common.vo.SysUnitVo;
+import com.qzi.cms.server.mapper.SysParameterMapper;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,6 +21,8 @@ import com.qzi.cms.common.enums.RespCodeEnum;
 import com.qzi.cms.common.resp.RespBody;
 import com.qzi.cms.common.util.LogUtils;
 import com.qzi.cms.server.service.app.HomeService;
+
+import java.util.List;
 
 /**
  * 首页控制器
@@ -91,6 +97,46 @@ public class HomeController {
 		try {
 			//保存返回数据
 			respBody.add(RespCodeEnum.SUCCESS.getCode(), "查找个人消息记录数成功", homeService.findMsgCount());
+		} catch (Exception ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), "查找个人消息记录数失败");
+			LogUtils.error("查找个人消息记录数失败！",ex);
+		}
+		return respBody;
+	}
+
+	/**
+	 * 获取系统参数
+	 * @return
+	 */
+	@GetMapping("/findSysParam")
+	public RespBody findSysParam(){
+		RespBody respBody = new RespBody();
+		try {
+			//保存返回数据
+			//respBody.add(RespCodeEnum.SUCCESS.getCode(), "查找个人消息记录数成功", homeService.findMsgCount());
+			List<SysParameterVo> list =  homeService.paramfindAll();
+			ParamObjectVo po = new ParamObjectVo();
+			if(list.size()>0){
+				for(SysParameterVo vo:list){
+						if(vo.getParaName().equals("androidAddr")){
+							po.setAndroidAddr(vo.getParaValue());
+						}else if(vo.getParaName().equals("iosAddr")){
+							po.setIosAddr(vo.getParaValue());
+						}else if(vo.getParaName().equals("androidAppVersion")){
+							po.setAndroidAppVersion(vo.getParaValue());
+						}else if(vo.getParaName().equals("iosAppVersion")){
+							po.setIosAppVersion(vo.getParaValue());
+						}else if(vo.getParaName().equals("androidForceUpdate")){
+							po.setAndroidForceUpdate(vo.getParaValue());
+						}else if(vo.getParaName().equals("iosForceUpdate")){
+							po.setIosForceUpdate(vo.getParaValue());
+						}else if(vo.getParaName().equals("serviceUpdate")){
+							po.setServiceUpdate(vo.getParaValue());
+						}
+				}
+			}
+			respBody.add(RespCodeEnum.SUCCESS.getCode(), "参数查找成功",po);
+
 		} catch (Exception ex) {
 			respBody.add(RespCodeEnum.ERROR.getCode(), "查找个人消息记录数失败");
 			LogUtils.error("查找个人消息记录数失败！",ex);

@@ -11,6 +11,9 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.qzi.cms.common.resp.Paging;
+import com.qzi.cms.common.vo.SysParameterVo;
+import com.qzi.cms.server.mapper.SysParameterMapper;
 import org.springframework.stereotype.Service;
 
 import com.qzi.cms.common.vo.UseMessageVo;
@@ -38,6 +41,8 @@ public class HomeServiceImpl implements HomeService {
 	private UseNoticeMapper noticeMapper;
 	@Resource
 	private CommonService commonServcie;
+	@Resource
+	private SysParameterMapper sysParameterMapper;
 
 	@Override
 	public List<String> findBanners() {
@@ -66,6 +71,11 @@ public class HomeServiceImpl implements HomeService {
 		UseResidentVo residet = commonServcie.findResident();
 		//调用dao
 		return msgMapper.findMsgCount(residet.getId());
+	}
+
+	@Override
+	public List<SysParameterVo> paramfindAll() throws Exception {
+		return sysParameterMapper.findAllApp();
 	}
 
 }

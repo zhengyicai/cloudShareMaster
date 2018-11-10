@@ -32,6 +32,9 @@ public interface SysParameterMapper extends BaseMapper<SysParameterPo>{
 	@Select("select * from sys_parameter order by createTime desc")
 	public List<SysParameterVo> findAll(RowBounds rwoBounds);
 
+	@Select("select * from sys_parameter order by createTime desc")
+	public List<SysParameterVo> findAllApp();
+
 	/**
 	 * @return
 	 */

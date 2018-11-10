@@ -24,6 +24,9 @@ public class UseResidentVo {
 	 * 姓名
 	 */
 	private String name;
+
+	private String salt;
+
 	/**
 	 * 手机号
 	 */
@@ -77,6 +80,28 @@ public class UseResidentVo {
 
 	private String remark;
 	private String unitId;
+
+
+	/**
+	 * 原密码
+	 */
+	private String oldPwd;
+
+	public String getOldPwd() {
+		return oldPwd;
+	}
+
+	public void setOldPwd(String oldPwd) {
+		this.oldPwd = oldPwd;
+	}
+
+	public String getSalt() {
+		return salt;
+	}
+
+	public void setSalt(String salt) {
+		this.salt = salt;
+	}
 
 	public String getUnitId() {
 		return unitId;

@@ -7,8 +7,11 @@
 */
 package com.qzi.cms.server.service.app;
 
+import java.lang.reflect.Parameter;
 import java.util.List;
 
+import com.qzi.cms.common.resp.Paging;
+import com.qzi.cms.common.vo.SysParameterVo;
 import com.qzi.cms.common.vo.UseMessageVo;
 import com.qzi.cms.common.vo.UseNoticeVo;
 
@@ -46,5 +49,7 @@ public interface HomeService {
 	 * @throws Exception 
 	 */
 	public long findMsgCount() throws Exception;
+
+	public List<SysParameterVo> paramfindAll() throws Exception;
 
 }

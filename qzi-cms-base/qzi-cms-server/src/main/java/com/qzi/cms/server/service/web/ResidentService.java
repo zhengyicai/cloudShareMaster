@@ -136,4 +136,6 @@ public interface ResidentService {
 	 */
 	public boolean existsOwner(UseResidentRoomVo residentRoomVo);
 
+	public boolean exist(String mobile);
+
 }

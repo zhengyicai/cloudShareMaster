@@ -12,6 +12,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.qzi.cms.common.util.YBBeanUtils;
 import com.qzi.cms.server.mapper.UseCommunityResidentMapper;
 import org.springframework.stereotype.Service;
 
@@ -85,7 +86,19 @@ public class LoginServiceImpl implements LoginService {
 		}
 		return token;
 	}
-	
+
+
+	public void appRegister(UseResidentVo residentVo){
+		if(residentMapper.existsMobile(residentVo.getMobile())){
+			//UseResidentPo po =  residentMapper.findMobile(residentVo.getMobile());
+
+		}else{
+
+
+		}
+	}
+
+
 	@Override
 	@SuppressWarnings("unchecked")
 	public void register(UseResidentVo residentVo) throws Exception{
@@ -103,7 +116,19 @@ public class LoginServiceImpl implements LoginService {
 		if(!smsCode.equals(residentVo.getSmsCode())){
 			throw new CommException("手机验证码输入有误");
 		}
-		newResidentService.add(residentVo);
+
+		UseResidentPo residentPo = YBBeanUtils.copyProperties(residentVo, UseResidentPo.class);
+		residentPo.setId(ToolUtils.getUUID());
+		String salt = ToolUtils.getUUID();
+		residentPo.setSalt(salt);
+		String loginPw = CryptUtils.hmacSHA1Encrypt(residentVo.getPassword(), salt);
+		residentPo.setPassword(loginPw);
+		residentPo.setCreateTime(new Date());
+		residentPo.setState("10");
+
+		residentMapper.insert(residentPo);
+
+
 	}
 
 	public void registerUpdate(UseResidentVo residentVo) throws Exception{
@@ -145,6 +170,21 @@ public class LoginServiceImpl implements LoginService {
 		String loginPw = CryptUtils.hmacSHA1Encrypt(residentVo.getPassword(), salt);
 		//修改密码
 		residentMapper.updatePwd(residentVo.getMobile(),loginPw,salt);
+	}
+
+	@Override
+	@SuppressWarnings("updatePwd")
+	public void updatePwd(UseResidentVo residentVo) throws Exception{
+		String salt = ToolUtils.getUUID();
+		// 用户有效，对输入密码进行加密
+		String loginPw = CryptUtils.hmacSHA1Encrypt(residentVo.getPassword(), salt);
+		//修改密码
+		residentMapper.updatePwd(residentVo.getMobile(),loginPw,salt);
+	}
+
+	@Override
+	public void updateName(UseResidentVo residentVo) throws Exception {
+		residentMapper.updateName(residentVo.getName(),residentVo.getMobile());
 	}
 
 

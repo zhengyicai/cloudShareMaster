@@ -87,7 +87,10 @@ public class BuildingController {
 	public RespBody updateState(@RequestBody UseBuildingVo buildingVo){
 		RespBody respBody = new RespBody();
 		try {
-			buildService.updateState(buildingVo);
+			SysUnitPo po = new SysUnitPo();
+			po.setId(buildingVo.getId());
+			po.setState(buildingVo.getState());
+			unitService.update(po);
 			respBody.add(RespCodeEnum.SUCCESS.getCode(), "修改状态成功");
 		} catch (Exception ex) {
 			respBody.add(RespCodeEnum.ERROR.getCode(), "修改状态失败");

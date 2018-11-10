@@ -28,7 +28,17 @@ public class TreeVo {
 	 * 子节点
 	 */
 	private List<TreeVo> children;
-	
+
+
+	/**
+	 *
+	 */
+	private String label;
+
+
+	private String parentId;
+
+
 	/**
 	 * 
 	 */
@@ -45,6 +55,24 @@ public class TreeVo {
 		this.id = id;
 		this.value = value;
 	}
+
+
+	public String getParentId() {
+		return parentId;
+	}
+
+	public void setParentId(String parentId) {
+		this.parentId = parentId;
+	}
+
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
+	}
+
 	/**
 	 * @return the id
 	 */

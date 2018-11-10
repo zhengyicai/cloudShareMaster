@@ -159,6 +159,33 @@ public class RegisterController {
 		respBody.add("0000","删除成功");
 		return respBody;
 	}
+
+	@PostMapping("/appRegister")
+	@SystemControllerLog(description="用户注册")
+	public RespBody appRegister(@RequestBody UseResidentVo residentVo){
+		// 创建返回对象
+		RespBody respBody = new RespBody();
+		if(hasErrors(residentVo,respBody)){
+			UseResidentPo po =  registerService.findMobile(residentVo.getMobile());
+
+			if(po != null){
+				respBody.add("2000","该用户已存在");
+
+			}else{
+				try {
+					loginService.register(residentVo);
+				} catch (Exception e) {
+
+					respBody.add(RespCodeEnum.ERROR.getCode(), e.getMessage());
+					LogUtils.error("用户注册失败！",e);
+				}
+			}
+		}
+
+		return respBody;
+	}
+
+
     @PostMapping("/register")
     	@SystemControllerLog(description="用户登录")
     	public RespBody register(@RequestBody UseResidentVo residentVo) {

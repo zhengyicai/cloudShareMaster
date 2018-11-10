@@ -43,4 +43,15 @@ public interface LoginService {
 	 */
 	public void findPwd(UseResidentVo residentVo) throws Exception;
 
+
+	/**
+	 * 修改密码
+	 * @param residentVo 用户对象
+	 * @throws Exception
+	 */
+	public void updatePwd(UseResidentVo residentVo) throws Exception;
+
+	public void updateName(UseResidentVo residentVo) throws  Exception;
+
+
 }
