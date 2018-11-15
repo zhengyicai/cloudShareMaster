@@ -98,6 +98,63 @@ public class UseCommunityVo {
 	 */
 	private String userStatus;
 
+	/**
+	 * 用户名
+	 */
+	private String  userWorkName;
+
+	/**
+	 * 物业状态
+	 * @return
+	 */
+	private String userWorkStatus;
+
+
+	/**
+	 * 厂商代码
+	 * @return
+	 */
+
+	private Integer code;
+
+
+	/**
+	 * 工程商id
+	 */
+	private String sysWorkId;
+
+	public String getSysWorkId() {
+		return sysWorkId;
+	}
+
+	public void setSysWorkId(String sysWorkId) {
+		this.sysWorkId = sysWorkId;
+	}
+
+	public String getUserWorkName() {
+		return userWorkName;
+	}
+
+	public void setUserWorkName(String userWorkName) {
+		this.userWorkName = userWorkName;
+	}
+
+	public String getUserWorkStatus() {
+		return userWorkStatus;
+	}
+
+	public void setUserWorkStatus(String userWorkStatus) {
+		this.userWorkStatus = userWorkStatus;
+	}
+
+	public Integer getCode() {
+		return code;
+	}
+
+	public void setCode(Integer code) {
+		this.code = code;
+	}
+
 	public String getUserStatus() {
 		return userStatus;
 	}

@@ -31,8 +31,8 @@ public interface UseCommunityMapper extends BaseMapper<UseCommunityPo>{
 	 * @param rwoBounds
 	 * @return
 	 */
-	@Select("select c.*,u.userName as userName,u.state as userStatus from use_community c left join sys_user u on u.id = c.sysUserId  order by c.createTime desc")
-	public List<UseCommunityVo> findAll(RowBounds rwoBounds);
+	@Select("select c.*,u.userName as userName,u.state as userStatus,u1.userName as userWorkName,u1.state as userWorkStatus from use_community c left join sys_user u on u.id = c.sysUserId  left join   sys_user u1 on u1.id =c.sysWorkId  inner join  use_community_user  ucu  where c.id = ucu.communityId and ucu.userId=#{userId} order by c.createTime desc")
+	public List<UseCommunityVo> findAll(@Param("userId") String  userId,RowBounds rwoBounds);
 
 	/**
 	 * 查询用户
@@ -43,8 +43,9 @@ public interface UseCommunityMapper extends BaseMapper<UseCommunityPo>{
 	/**
 	 * @return
 	 */
-	@Select("select count(1) from use_community")
-	public long findCount();
+	@Select("select count(1) from use_community c left join sys_user u on u.id = c.sysUserId inner join  use_community_user  ucu  where c.id = ucu.communityId and ucu.userId=#{userId}")
+	public long findCount(@Param("userId") String  userId);
+
 
 	/**
 	 * @return

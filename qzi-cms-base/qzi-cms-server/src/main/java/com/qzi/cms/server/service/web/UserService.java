@@ -12,6 +12,7 @@ import java.util.List;
 import com.qzi.cms.common.resp.Paging;
 import com.qzi.cms.common.vo.SysRoleVo;
 import com.qzi.cms.common.vo.SysUserVo;
+import com.qzi.cms.common.vo.TreeVo;
 
 /**
  * 用户业务层接口
@@ -36,6 +37,16 @@ public interface UserService {
 	 */
 	public List<SysUserVo> findAll(Paging paging);
 
+	public List<SysUserVo> findAllChild(String parentId,Paging paging);
+	public long findAllChildCount(String parentId);
+
+	public List<SysUserVo> findRoleAll(Paging paging) throws  Exception;
+
+
+	public List<TreeVo> findTree() throws Exception;
+
+	public long findRoleCount() throws  Exception;
+
 	/**
 	 * 查找总记录数
 	 * @return
@@ -48,6 +59,12 @@ public interface UserService {
 	 * @throws Exception 
 	 */
 	public void add(SysUserVo userVo) throws Exception;
+
+
+
+	public void firmAdd(SysUserVo userVo) throws Exception;
+
+
 
 	/**
 	 * 新增物业用户
@@ -89,11 +106,20 @@ public interface UserService {
 	 */
 	public SysUserVo findByLoginName(String loginName);
 
+
+	/**
+	 * 判断code是否存在
+	 * @param code
+	 * @return
+	 */
+
+	public Integer findCodeExist(Integer code);
+
 	/**
 	 * 修改密码
 	 * @param newPw
 	 * @param id
 	 */
 	public void updatePw(String newPw, String id);
-	
+
 }

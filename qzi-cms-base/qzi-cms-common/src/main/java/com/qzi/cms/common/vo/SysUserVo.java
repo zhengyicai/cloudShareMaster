@@ -77,6 +77,44 @@ public class SysUserVo implements Serializable{
 	private String communityArea;
 
 
+	/**
+	 * 厂商代码
+	 */
+	private Integer code;
+
+	/**
+	 * 上级id
+	 */
+	private String parentId;
+
+
+	private String remark;
+
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public Integer getCode() {
+		return code;
+	}
+
+	public void setCode(Integer code) {
+		this.code = code;
+	}
+
+	public String getParentId() {
+		return parentId;
+	}
+
+	public void setParentId(String parentId) {
+		this.parentId = parentId;
+	}
+
 	public String getCommunityArea() {
 		return communityArea;
 	}

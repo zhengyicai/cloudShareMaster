@@ -87,7 +87,60 @@ public class UserController {
 		}
 		return respBody;
 	}
-	
+
+
+
+
+	@GetMapping("/findAllChild")
+	public RespBody findAllChild(String parentId,Paging paging){
+		RespBody respBody = new RespBody();
+		try {
+			//保存返回数据
+			respBody.add(RespCodeEnum.SUCCESS.getCode(), "查找所有用户信息数据成功", userService.findRoleAll(paging));
+			//保存分页对象
+			paging.setTotalCount(userService.findAllChildCount(parentId));
+			respBody.setPage(paging);
+		} catch (Exception ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), "查找所有用户信息数据失败");
+			LogUtils.error("查找所有用户信息数据失败！",ex);
+		}
+		return respBody;
+	}
+
+	@GetMapping("/findAllWorkChild")
+	public RespBody findAllWorkChild(String parentId,Paging paging){
+		RespBody respBody = new RespBody();
+		try {
+			//保存返回数据
+			respBody.add(RespCodeEnum.SUCCESS.getCode(), "查找所有用户信息数据成功", userService.findAllChild(parentId,paging));
+			//保存分页对象
+			paging.setTotalCount( userService.findAllChild(parentId,paging).size());
+			respBody.setPage(paging);
+		} catch (Exception ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), "查找所有用户信息数据失败");
+			LogUtils.error("查找所有用户信息数据失败！",ex);
+		}
+		return respBody;
+	}
+
+
+	/**
+	 * 查询厂商列表
+	 * @return
+	 */
+
+	@GetMapping("/findTree")
+	public RespBody findTree(){
+		RespBody respBody = new RespBody();
+		try {
+			//查找数据并返回
+			respBody.add(RespCodeEnum.SUCCESS.getCode(), "获取用户小区信息成功",userService.findTree());
+		} catch (Exception ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), "获取用户小区信息异常");
+			LogUtils.error("获取用户小区信息异常！",ex);
+		}
+		return respBody;
+	}
 	@GetMapping("/findRoles")
 	public RespBody findRoles(){
 		RespBody respBody = new RespBody();
@@ -121,13 +174,49 @@ public class UserController {
 		}
 		return respBody;
 	}
+
+
+	@PostMapping("/firmAdd")
+	public RespBody firmAdd(@RequestBody SysUserVo userVo){
+		RespBody respBody = new RespBody();
+		try {
+			//判断用户是否存在
+			SysUserVo findUser = userService.findByLoginName(userVo.getLoginName());
+		     Integer codeCount =   userService.findCodeExist(userVo.getCode());
+
+
+			if(findUser == null){
+				if(codeCount >0){
+					respBody.add(RespCodeEnum.ERROR.getCode(), "厂商编号已经存在");
+				}else{
+					userService.firmAdd(userVo);
+					respBody.add(RespCodeEnum.SUCCESS.getCode(), "用户信息保存成功");
+				}
+
+			}else{
+				respBody.add(RespCodeEnum.ERROR.getCode(), "登录名已经存在");
+			}
+
+		} catch (Exception ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), "用户信息保存失败");
+			LogUtils.error("用户信息保存失败！",ex);
+		}
+		return respBody;
+	}
 	
 	@PostMapping("/update")
 	public RespBody update(@RequestBody SysUserVo userVo){
 		RespBody respBody = new RespBody();
 		try {
-			userService.update(userVo);
-			respBody.add(RespCodeEnum.SUCCESS.getCode(), "用户信息修改成功");
+
+			SysUserVo findUser = userService.findByLoginName(userVo.getLoginName());
+			if(findUser == null){
+				userService.update(userVo);
+				respBody.add(RespCodeEnum.SUCCESS.getCode(), "用户信息修改成功");
+			}else{
+				respBody.add(RespCodeEnum.ERROR.getCode(), "登录名已经存在");
+			}
+
 		} catch (Exception ex) {
 			respBody.add(RespCodeEnum.ERROR.getCode(), "用户信息修改失败");
 			LogUtils.error("用户信息修改失败！",ex);

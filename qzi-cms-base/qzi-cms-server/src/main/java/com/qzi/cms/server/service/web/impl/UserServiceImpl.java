@@ -12,15 +12,14 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
-import com.qzi.cms.common.po.UseCommunityPo;
-import com.qzi.cms.common.po.UseCommunityUserPo;
+import com.qzi.cms.common.po.*;
 import com.qzi.cms.common.vo.AdminVo;
-import com.qzi.cms.server.mapper.UseCommunityMapper;
-import com.qzi.cms.server.mapper.UseCommunityUserMapper;
+import com.qzi.cms.common.vo.TreeVo;
+import com.qzi.cms.server.mapper.*;
+import com.qzi.cms.server.service.common.CommonService;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Service;
 
-import com.qzi.cms.common.po.SysUserPo;
 import com.qzi.cms.common.resp.Paging;
 import com.qzi.cms.common.service.RedisService;
 import com.qzi.cms.common.util.CryptUtils;
@@ -28,8 +27,6 @@ import com.qzi.cms.common.util.ToolUtils;
 import com.qzi.cms.common.util.YBBeanUtils;
 import com.qzi.cms.common.vo.SysRoleVo;
 import com.qzi.cms.common.vo.SysUserVo;
-import com.qzi.cms.server.mapper.SysRoleMapper;
-import com.qzi.cms.server.mapper.SysUserMapper;
 import com.qzi.cms.server.service.web.UserService;
 
 /**
@@ -51,6 +48,12 @@ public class UserServiceImpl implements UserService {
 	@Resource
 	private UseCommunityMapper communityMapper;
 
+	@Resource
+	private UseFirmAdminMapper useFirmAdminMapper;
+
+	@Resource
+	private CommonService commonService;
+
 	@Override
 	public SysUserVo SysUserVo(String token) throws Exception {
 		SysUserVo userVo = null;
@@ -65,6 +68,38 @@ public class UserServiceImpl implements UserService {
 	public List<SysUserVo> findAll(Paging paging) {
 		RowBounds rwoBounds = new RowBounds(paging.getPageNumber(),paging.getPageSize());
 		return userMapper.findAll(rwoBounds);
+	}
+
+	@Override
+	public List<SysUserVo> findAllChild(String parentId, Paging paging) {
+		RowBounds rwoBounds = new RowBounds(paging.getPageNumber(),paging.getPageSize());
+		return userMapper.findAllChild(rwoBounds,parentId);
+	}
+
+	@Override
+	public long findAllChildCount(String parentId) {
+		return userMapper.findAllChildCount(parentId);
+	}
+
+	@Override
+	public List<SysUserVo> findRoleAll(Paging paging) throws  Exception {
+		SysUserVo userVo = commonService.findUser();
+		RowBounds rwoBounds = new RowBounds(paging.getPageNumber(),paging.getPageSize());
+
+		return userMapper.findRoleAll(rwoBounds,userVo.getId());
+	}
+
+	@Override
+	public List<TreeVo> findTree() throws Exception {
+		//读取用户信息
+		SysUserVo userVo = commonService.findUser();
+		return userMapper.findTree(userVo.getId());
+	}
+
+	@Override
+	public long findRoleCount() throws Exception {
+		SysUserVo userVo = commonService.findUser();
+		return userMapper.findRoleCount(userVo.getId());
 	}
 
 	@Override
@@ -86,6 +121,33 @@ public class UserServiceImpl implements UserService {
 		
 
 
+	}
+
+	@Override
+	public void firmAdd(SysUserVo userVo) throws Exception {
+		SysUserPo userPo = YBBeanUtils.copyProperties(userVo, SysUserPo.class);
+		String salt = ToolUtils.getUUID();
+		String loginPw = CryptUtils.hmacSHA1Encrypt(userVo.getPassword(), salt);
+		userPo.setPassword(loginPw);
+		userPo.setSalt(salt);
+		userPo.setId(ToolUtils.getUUID());
+		userPo.setCreateTime(new Date());
+		userMapper.insert(userPo);
+
+		/**
+		 * 添加admin和厂商的权限
+		 */
+		UseFirmAdminPo ufPo = new UseFirmAdminPo();
+		ufPo.setFirmId(userPo.getId());
+		ufPo.setUserId(userPo.getId());
+		useFirmAdminMapper.insert(ufPo);
+
+
+		SysUserVo sysUserVo =  userMapper.findByloginName("admin");
+		UseFirmAdminPo ufPo1 = new UseFirmAdminPo();
+		ufPo1.setFirmId(userPo.getId());
+		ufPo1.setUserId(sysUserVo.getId());
+		useFirmAdminMapper.insert(ufPo1);
 	}
 
 
@@ -115,11 +177,11 @@ public class UserServiceImpl implements UserService {
 				communityUserMapper.insert(ucuPo);
 
 
-				SysUserVo sysUserVo =  userMapper.findByloginName("admin");
-				UseCommunityUserPo sysPo = new UseCommunityUserPo();
-				sysPo.setCommunityId(userVo.getCommunityArea());
-				sysPo.setUserId(sysUserVo.getId());
-				communityUserMapper.insert(sysPo);
+//				SysUserVo sysUserVo =  userMapper.findByloginName("admin");
+//				UseCommunityUserPo sysPo = new UseCommunityUserPo();
+//				sysPo.setCommunityId(userVo.getCommunityArea());
+//				sysPo.setUserId(sysUserVo.getId());
+//				communityUserMapper.insert(sysPo);
 
 				UseCommunityPo po =  communityMapper.findOne(userVo.getCommunityArea());
 			    po.setSysUserId(userPo.getId());
@@ -137,6 +199,7 @@ public class UserServiceImpl implements UserService {
 		userPo.setRoleId(userVo.getRoleId());
 		userPo.setRoleName(userVo.getRoleName());
 		userPo.setState(userVo.getState());
+		userPo.setRemark(userVo.getRemark());
 		userMapper.updateByPrimaryKey(userPo);
 	}
 
@@ -160,6 +223,12 @@ public class UserServiceImpl implements UserService {
 	public SysUserVo findByLoginName(String loginName) {
 		return userMapper.findByloginName(loginName);
 	}
+
+	@Override
+	public Integer findCodeExist(Integer code) {
+		return userMapper.findCodeExite(code);
+	}
+
 
 	@Override
 	public void updatePw(String newPw,String id) {

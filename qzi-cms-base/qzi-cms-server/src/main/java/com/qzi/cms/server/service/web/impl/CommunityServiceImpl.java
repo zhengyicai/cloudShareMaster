@@ -13,6 +13,7 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import com.qzi.cms.common.vo.*;
+import com.qzi.cms.server.service.common.CommonService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Service;
@@ -49,11 +50,14 @@ public class CommunityServiceImpl implements CommunityService {
 	private UseCommunityUserMapper communityUserMapper;
 	@Resource
 	private UseBuildingMapper buildMapper;
+	@Resource
+	private CommonService commonService;
 
 	@Override
-	public List<UseCommunityVo> findAll(Paging paging) {
+	public List<UseCommunityVo> findAll(Paging paging) throws Exception  {
+		SysUserVo userVo = commonService.findUser();
 		RowBounds rwoBounds = new RowBounds(paging.getPageNumber(),paging.getPageSize());
-		return communityMapper.findAll(rwoBounds);
+		return communityMapper.findAll(userVo.getId(),rwoBounds);
 	}
 
 	@Override
@@ -62,8 +66,9 @@ public class CommunityServiceImpl implements CommunityService {
 	}
 
 	@Override
-	public long findCount() {
-		return communityMapper.findCount();
+	public long findCount()  throws Exception {
+		SysUserVo userVo = commonService.findUser();
+		return communityMapper.findCount(userVo.getId());
 	}
 
 	@Override
@@ -84,6 +89,42 @@ public class CommunityServiceImpl implements CommunityService {
 			buildPo.setState(StateEnum.NORMAL.getCode());
 			buildMapper.insert(buildPo);
 		}*/
+	}
+
+	@Override
+	public void wordAdd(UseCommunityVo communityVo) throws Exception {
+		UseCommunityPo ucPo = YBBeanUtils.copyProperties(communityVo, UseCommunityPo.class);
+		ucPo.setId(ToolUtils.getUUID());
+		ucPo.setCommunityNo(getCommunityNo());
+		ucPo.setCreateTime(new Date());
+		communityMapper.insert(ucPo);
+
+
+
+
+		//添加admin账号
+		SysUserVo sysUserVo =  userMapper.findByloginName("admin");
+		UseCommunityUserPo sysPo = new UseCommunityUserPo();
+		sysPo.setCommunityId(ucPo.getId());
+		sysPo.setUserId(sysUserVo.getId());
+		communityUserMapper.insert(sysPo);
+
+
+		SysUserVo userVo = commonService.findUser();
+		if(sysUserVo.getId().equals(userVo.getId())){
+
+		}else{
+			//添加当前账号关联小区的数据
+			UseCommunityUserPo sysPo1 = new UseCommunityUserPo();
+			sysPo1.setCommunityId(ucPo.getId());
+			sysPo1.setUserId(userVo.getId());
+			communityUserMapper.insert(sysPo1);
+		}
+
+
+
+
+
 	}
 
 	@Override

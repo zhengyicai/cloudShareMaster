@@ -94,6 +94,26 @@ public class CommunityAreaController {
 		}
 		return respBody;
 	}
+
+	/**
+	 * 2018/11/15
+	 * @param communityVo
+	 * @return
+	 */
+	@PostMapping("/workAdd")
+	@SystemControllerLog(description="新增住宅小区")
+	public RespBody workAdd(@RequestBody UseCommunityVo communityVo){
+		RespBody respBody = new RespBody();
+		try {
+			communityService.wordAdd(communityVo);
+			respBody.add(RespCodeEnum.SUCCESS.getCode(), "住宅小区保存成功");
+		} catch (Exception ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), "住宅小区保存失败");
+			LogUtils.error("住宅小区保存失败！",ex);
+		}
+		return respBody;
+	}
+
 	
 	@PostMapping("/update")
 	@SystemControllerLog(description="修改住宅小区")

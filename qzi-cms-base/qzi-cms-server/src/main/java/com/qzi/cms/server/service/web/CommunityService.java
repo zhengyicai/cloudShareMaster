@@ -26,7 +26,7 @@ public interface CommunityService {
 	 * @param paging
 	 * @return
 	 */
-	public List<UseCommunityVo> findAll(Paging paging);
+	public List<UseCommunityVo> findAll(Paging paging) throws Exception ;
 
 	/**
 	 * 获取当前每个小区的数据
@@ -37,7 +37,7 @@ public interface CommunityService {
 	 * 查找总记录数
 	 * @return
 	 */
-	public long findCount();
+	public long findCount() throws Exception ;
 
 	/**
 	 * 保存
@@ -45,6 +45,15 @@ public interface CommunityService {
 	 * @throws Exception 
 	 */
 	public void add(UseCommunityVo communityVo) throws Exception;
+
+
+	/**
+	 * 保存
+	 * @param communityVo
+	 * @throws Exception
+	 */
+	public void wordAdd(UseCommunityVo communityVo) throws Exception;
+
 
 	/**
 	 * 修改

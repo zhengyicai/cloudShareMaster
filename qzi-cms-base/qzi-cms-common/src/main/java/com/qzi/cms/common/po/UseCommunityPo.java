@@ -91,6 +91,35 @@ public class UseCommunityPo {
 	 */
 	private String sysUserId;
 
+	/**
+	 * 厂商代码
+	 * @return
+	 */
+
+	private Integer code;
+
+
+	/**
+	 * 工程商id
+	 */
+	private String sysWorkId;
+
+	public Integer getCode() {
+		return code;
+	}
+
+	public void setCode(Integer code) {
+		this.code = code;
+	}
+
+	public String getSysWorkId() {
+		return sysWorkId;
+	}
+
+	public void setSysWorkId(String sysWorkId) {
+		this.sysWorkId = sysWorkId;
+	}
+
 	public String getSysUserId() {
 		return sysUserId;
 	}
