@@ -79,6 +79,20 @@ public class ResidentServiceImpl implements ResidentService {
 		
 	}
 
+	@Override
+	public List<UseResidentVo> residentList(Paging paging, String criteria) throws Exception {
+		//读取用户信息
+		SysUserVo userVo = commonService.findUser();
+		//分页对象
+		RowBounds rwoBounds = new RowBounds(paging.getPageNumber(),paging.getPageSize());
+		return residentMapper.residentList(rwoBounds,criteria);
+	}
+
+	@Override
+	public long residentCount(String criteria) throws Exception {
+		return residentMapper.residentCount(criteria);
+	}
+
 
 	@Override
 	public void add(UseResidentVo residentVo) throws CommException {
@@ -153,19 +167,16 @@ public class ResidentServiceImpl implements ResidentService {
 //		ClientVo client = new ClientVo();
 //		client.setUserId(residentVo.getMobile());
 //		clientUtils.deleteClient(client);
-		//删除住户房间关系
-		residentRoomMapper.deleteByCriteria(residentVo.getId(),residentVo.getCommunityId());
-		//删除住户小区关系
-		communityResidentMapper.deleteByCriteria(residentVo.getId(),residentVo.getCommunityId());
+		//删除住户授权
+		residentMapper.delAuthResidentId(residentVo.getId());
+		//删除住户
+		residentMapper.delResident(residentVo.getId());
+		//communityResidentMapper.deleteByCriteria(residentVo.getId(),residentVo.getCommunityId());
 	}
 
 	@Override
 	public void updateState(UseResidentVo residentVo) {
-		UseCommunityResidentPo crPo = new UseCommunityResidentPo();
-		crPo.setCommunityId(residentVo.getCommunityId());
-		crPo.setResidentId(residentVo.getId());
-		crPo.setState(residentVo.getState());
-		communityResidentMapper.updateByPrimaryKey(crPo);
+		residentMapper.updateResident(residentVo.getId(),residentVo.getState());
 	}
 
 	@Override

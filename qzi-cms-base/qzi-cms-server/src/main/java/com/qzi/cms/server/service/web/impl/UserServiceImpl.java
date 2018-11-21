@@ -237,4 +237,9 @@ public class UserServiceImpl implements UserService {
 		userMapper.updateByPrimaryKey(userPo);
 	}
 
+	@Override
+	public SysUserVo findOne(String id) {
+		return userMapper.findOne(id);
+	}
+
 }

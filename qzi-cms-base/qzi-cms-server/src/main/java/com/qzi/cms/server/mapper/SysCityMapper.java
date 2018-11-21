@@ -30,5 +30,9 @@ public interface SysCityMapper extends BaseMapper<SysCityPo>{
 	 */
 	@Select("SELECT * from sys_city where parentCode=#{code} ORDER BY code")
 	public List<SysCityVo> findCitys(@Param("code") String parentCode);
+
+
+	@Select("SELECT * from sys_city where level=#{level} ORDER BY code")
+	public  List<SysCityVo> findLevel(@Param("level") String level);
 	
 }

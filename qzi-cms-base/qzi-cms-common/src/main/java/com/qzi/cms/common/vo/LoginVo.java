@@ -30,7 +30,48 @@ public class LoginVo{
 	 * 验证码
 	 */
 	private String picCode;
-	
+
+
+	/**
+	 * token
+	 */
+	private  String token;
+	/**
+	 * 权限id
+	 */
+	private String roleId;
+
+	/**
+	 * 默认小区
+	 */
+
+	private String communityId;
+
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+	public String getRoleId() {
+		return roleId;
+	}
+
+	public void setRoleId(String roleId) {
+		this.roleId = roleId;
+	}
+
+	public String getCommunityId() {
+		return communityId;
+	}
+
+	public void setCommunityId(String communityId) {
+		this.communityId = communityId;
+	}
+
 	/**
 	 * @return the imgKey
 	 */

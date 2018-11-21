@@ -25,6 +25,86 @@
 			</if>
 		</where>
 	</select>
+
+
+
+
+	<!-- 条件分页查询   用户管理-->
+	<select id="residentList" resultType="UseResidentVo" parameterType="String">
+		SELECT ur.*  from use_resident ur
+		<where>
+
+			<if test="criteria != null and criteria !=''">
+				<bind name="pun" value="'%'+_parameter.criteria+'%'"/>
+				and (ur.name like #{pun} or ur.mobile like #{pun})
+			</if>
+		</where>
+		order by createTime desc
+	</select>
+
+	<select id="residentCount" resultType="long" parameterType="String">
+		SELECT count(1) from use_resident ur
+		<where>
+
+			<if test="criteria != null and criteria !=''">
+				<bind name="pun" value="'%'+_parameter.criteria+'%'"/>
+				and (ur.name like #{pun} or ur.mobile like #{pun})
+			</if>
+		</where>
+	</select>
+
+
+	<!-- 条件分页查询   授权管理-->
+	<select id="authList" resultType="UseResidentRoomVo" parameterType="String">
+		select uroom.*, usr.name ,usr.mobile, use_community.communityName,use_building.buildingName,use_unit.unitName,room.roomName  from use_resident_room uroom left join use_resident usr on uroom.residentId = usr.id LEFT JOIN use_room room  on uroom.roomId = room.id left join use_building on room.buildingId = use_building.id
+		left join use_community on room.communityId =  use_community.id  left join use_unit on room.unitId = use_unit.id
+		<where>
+			1=1
+			<if test="criteria != null and criteria !=''">
+				<bind name="pun" value="'%'+_parameter.criteria+'%'"/>
+				and (usr.name like #{pun} or usr.mobile like #{pun})
+			</if>
+			<if test="communityId != null and communityId !=''">
+				and   uroom.communityId = #{communityId}
+			</if>
+		</where>
+		order by uroom.owner desc
+
+	</select>
+
+	<select id="authCount" resultType="long" parameterType="String">
+		SELECT count(1) from use_resident_room ur
+		<where>
+
+			<if test="criteria != null and criteria !=''">
+				<bind name="pun" value="'%'+_parameter.criteria+'%'"/>
+				and (ur.name like #{pun} or ur.mobile like #{pun})
+			</if>
+			<if test="communityId != null and communityId !=''">
+				and   ur.communityId = #{communityId}
+			</if>
+		</where>
+	</select>
+
+
+	<!-- 条件分页查询   查看用户绑定小区详情-->
+	<select id="authListDetail" resultType="UseResidentRoomVo" parameterType="String">
+		select uroom.*, usr.name ,usr.mobile, use_community.communityName,use_building.buildingName,use_unit.unitName,room.roomName  from use_resident_room uroom left join use_resident usr on uroom.residentId = usr.id LEFT JOIN use_room room  on uroom.roomId = room.id left join use_building on room.buildingId = use_building.id
+		left join use_community on room.communityId =  use_community.id  left join use_unit on room.unitId = use_unit.id
+		<where>
+			1=1
+
+			<if test="residentId != null and residentId !=''">
+				and   uroom.residentId = #{residentId}
+			</if>
+		</where>
+
+	</select>
+
+
+
+
+
 	
 	<select id="findAllByCriteria" resultType="UseResidentVo" parameterType="String">
 		SELECT ur.* from use_resident ur LEFT JOIN use_community_resident ucr ON ucr.residentId = ur.id 

@@ -18,6 +18,9 @@ import javax.persistence.Table;
  */
 @Table(name="use_resident_room")
 public class UseResidentRoomPo {
+
+
+	private String id;
 	/**
 	 * 住户编号
 	 */
@@ -33,10 +36,43 @@ public class UseResidentRoomPo {
 	 */
 	private String communityId;
 	/**
-	 * 是否户主
+	 * 是否授权 10通过 20授权
 	 */
 	private String owner;
-	
+	/**
+	 *
+	 */
+
+	private String isTrue;
+
+
+	private  String remark;
+
+
+	public String getId(String uuid) {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getRemark() {
+		return remark;
+	}
+
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
+
+	public String getIsTrue() {
+		return isTrue;
+	}
+
+	public void setIsTrue(String isTrue) {
+		this.isTrue = isTrue;
+	}
+
 	/**
 	 * @return the communityId
 	 */

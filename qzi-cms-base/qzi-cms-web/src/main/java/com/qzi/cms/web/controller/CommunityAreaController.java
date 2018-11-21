@@ -189,13 +189,16 @@ public class CommunityAreaController {
 		try {
 
 			String token = request.getHeader("token");
+			//SysUserVo userVo1 = userService.SysUserVo(token);
+
+			SysUserVo sv =   userService.findOne(userVo.getId());
 		/*	//读取用户信息
 			SysUserVo userVo = userService.SysUserVo(token);*/
 			// 对输入密码进行加密
 
 
 				//对新密码进行加密
-				String newPw = CryptUtils.hmacSHA1Encrypt(userVo.getPassword(), userVo.getId());
+				String newPw = CryptUtils.hmacSHA1Encrypt(userVo.getPassword(), sv.getSalt());
 				//旧密码正确，调用业务层执行密码更新
 				userService.updatePw(newPw,userVo.getId());
 				respBody.add(RespCodeEnum.SUCCESS.getCode(), "修改密码成功");

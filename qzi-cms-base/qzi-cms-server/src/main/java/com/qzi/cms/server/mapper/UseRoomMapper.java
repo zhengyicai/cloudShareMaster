@@ -36,7 +36,7 @@ public interface UseRoomMapper extends BaseMapper<UseRoomPo>{
 	public List<UseRoomVo> findBuilding(@Param("buildingId") String buildingId, @Param("unitId") String unitId, RowBounds rwoBounds);
 
 
-	@Select("SELECT * from use_room where unitId=#{unitId} and buildingId = #{buildingId} and roomName=#{roomName} ORDER BY roomNo")
+	@Select("SELECT * from use_room where unitId=#{unitId} and buildingId = #{buildingId} and roomName=#{roomName} and state = '10'  ORDER BY roomNo")
 	public UseRoomVo findRoom(@Param("buildingId") String buildingId, @Param("unitId") String unitId,  @Param("roomName") String roomName);
 
 

@@ -16,11 +16,15 @@ import com.qzi.cms.common.util.LogUtils;
 import com.qzi.cms.common.util.ToolUtils;
 import com.qzi.cms.common.util.YBBeanUtils;
 import com.qzi.cms.common.vo.UseBuildingVo;
+import com.qzi.cms.common.vo.UseResidentRoomVo;
 import com.qzi.cms.common.vo.UseResidentVo;
+import com.qzi.cms.server.mapper.SysCityMapper;
 import com.qzi.cms.server.mapper.UseCommunityResidentMapper;
+import com.qzi.cms.server.mapper.UseResidentMapper;
 import com.qzi.cms.server.service.app.LoginService;
 import com.qzi.cms.server.service.app.RegisterService;
 import com.qzi.cms.server.service.app.UseCommunityResidentService;
+import com.qzi.cms.server.service.common.CommonService;
 import com.qzi.cms.server.service.web.NewResidentService;
 import com.qzi.cms.server.service.web.ResidentService;
 import com.qzi.cms.server.service.web.UnitService;
@@ -69,19 +73,44 @@ public class RegisterController {
 	private UseCommunityResidentMapper communityResidentMapper;
 
 
+	@Resource
+	private SysCityMapper cityMapper;
+
+	@Resource
+	private CommonService commonService;
+
+	@Resource
+	private UseResidentMapper useResidentMapper;
+
+
+	@GetMapping("/getLevel")
+	@SystemControllerLog(description="获取楼栋数据")
+	public RespBody getLevel(java.lang.String level) {
+		// 创建返回对象
+		RespBody respBody = new RespBody();
+		try {
+
+
+
+
+			respBody.add(RespCodeEnum.SUCCESS.getCode(),"获取楼栋成功",cityMapper.findLevel(level));
+
+		}catch (Exception ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), "用户登录失败");
+			LogUtils.error("用户登录失败！",ex);
+		}
+		return respBody;
+	}
     @PostMapping("/getCommunity")
     @SystemControllerLog(description="获取小区")
     public RespBody getCommunity(@RequestBody UseCommunityPo po) {
         // 创建返回对象
         RespBody respBody = new RespBody();
         try {
-
-
-            respBody.add(RespCodeEnum.SUCCESS.getCode(),"获取小区成功", registerService.regfindAll(po));
-
+            respBody.add(RespCodeEnum.SUCCESS.getCode(),"添加小区成功", registerService.regfindAll(po));
         }catch (Exception ex) {
-            respBody.add(RespCodeEnum.ERROR.getCode(), "获取小区失败");
-            LogUtils.error("获取小区失败！",ex);
+            respBody.add(RespCodeEnum.ERROR.getCode(), ex.getMessage());
+            LogUtils.error("添加小区失败！",ex);
         }
         return respBody;
     }
@@ -121,6 +150,74 @@ public class RegisterController {
        }
        return respBody;
     }
+
+
+	@PostMapping("/addCommunity")
+	@SystemControllerLog(description="添加小区")
+	public RespBody addCommunity(@RequestBody UseResidentVo residentVo) {
+
+		// 创建返回对象
+		RespBody respBody = new RespBody();
+		try {
+
+
+			UseResidentVo userVo = commonService.findResident();
+
+			if(userVo !=null){
+				 residentVo.setId(userVo.getId());
+				 registerService.addCommunity(residentVo);
+				respBody.add(RespCodeEnum.SUCCESS.getCode(),"添加小区成功");
+			}
+
+		} catch (CommException ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), ex.getMessage());
+			LogUtils.error("修改昵称失败！",ex);
+		} catch (Exception ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), "修改昵称失败");
+			LogUtils.error("修改昵称失败！",ex);
+		}
+		return respBody;
+
+
+	}
+
+
+	@GetMapping("/communityList")
+	@SystemControllerLog(description="小区列表")
+	public RespBody communityList() {
+
+		// 创建返回对象
+		RespBody respBody = new RespBody();
+		try {
+
+			UseResidentVo userVo = commonService.findResident();
+			if(userVo !=null){
+				respBody.add(RespCodeEnum.SUCCESS.getCode(),"获取小区列表成功",useResidentMapper.authListDetail(userVo.getId()));
+			}
+
+		} catch (CommException ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), ex.getMessage());
+			LogUtils.error("获取小区列表失败！",ex);
+		} catch (Exception ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), "获取小区列表失败");
+			LogUtils.error("获取小区列表失败！",ex);
+		}
+		return respBody;
+	}
+
+	@PostMapping("/communityDelete")
+	@SystemControllerLog(description="删除小区")
+	public RespBody communityDelete(@RequestBody UseResidentRoomVo useResidentRoomVo){
+		RespBody respBody = new RespBody();
+		try {
+			useResidentMapper.delAuth(useResidentRoomVo.getId());
+			respBody.add(RespCodeEnum.SUCCESS.getCode(), "小区删除成功");
+		} catch (Exception ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), "小区删除失败");
+			LogUtils.error("小区删除失败！",ex);
+		}
+		return respBody;
+	}
 
 
 

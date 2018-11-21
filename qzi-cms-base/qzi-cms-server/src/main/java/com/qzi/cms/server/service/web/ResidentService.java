@@ -41,6 +41,25 @@ public interface ResidentService {
 	 */
 	public long findCount(String criteria) throws Exception;
 
+
+
+	/**
+	 * 查找数据  2018-11-20  1.0.0
+	 * @param paging 分页
+	 * @param criteria 条件
+	 * @return 集合
+	 * @throws Exception
+	 */
+	public List<UseResidentVo> residentList(Paging paging, String criteria) throws Exception;
+
+	/**
+	 * 总记录数  2018-11-20  1.0.0
+	 * @param criteria 条件
+	 * @return 总记录数
+	 * @throws Exception
+	 */
+	public long residentCount(String criteria) throws Exception;
+
 	/**
 	 * 新增住户
 	 * @param residentVo 住户信息

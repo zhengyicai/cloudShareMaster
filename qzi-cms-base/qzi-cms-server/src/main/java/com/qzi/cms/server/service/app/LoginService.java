@@ -9,6 +9,7 @@ package com.qzi.cms.server.service.app;
 
 import com.qzi.cms.common.exception.CommException;
 import com.qzi.cms.common.vo.LoginVo;
+import com.qzi.cms.common.vo.SysUserVo;
 import com.qzi.cms.common.vo.UseResidentVo;
 
 /**
@@ -26,6 +27,11 @@ public interface LoginService {
 	 * @throws CommException 
 	 */
 	public String LoginIn(LoginVo loginVo) throws CommException;
+
+
+
+
+	public String LoginInSys(LoginVo loginVo) throws  CommException;
 
 	/**
 	 * 新用户注册

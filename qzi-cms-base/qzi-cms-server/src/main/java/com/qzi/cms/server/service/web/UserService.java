@@ -122,4 +122,7 @@ public interface UserService {
 	 */
 	public void updatePw(String newPw, String id);
 
+
+	public SysUserVo findOne(String id);
+
 }

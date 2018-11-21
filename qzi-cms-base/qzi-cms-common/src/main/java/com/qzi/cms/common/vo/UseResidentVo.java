@@ -87,6 +87,20 @@ public class UseResidentVo {
 	 */
 	private String oldPwd;
 
+
+	/**
+	 * 是否默认小区
+	 */
+	private String  isTrue;
+
+	public String getIsTrue() {
+		return isTrue;
+	}
+
+	public void setIsTrue(String isTrue) {
+		this.isTrue = isTrue;
+	}
+
 	public String getOldPwd() {
 		return oldPwd;
 	}

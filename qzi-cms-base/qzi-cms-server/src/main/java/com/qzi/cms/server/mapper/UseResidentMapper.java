@@ -9,16 +9,14 @@ package com.qzi.cms.server.mapper;
 
 import java.util.List;
 
+import com.qzi.cms.common.vo.*;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.apache.ibatis.session.RowBounds;
 
 import com.qzi.cms.common.po.UseResidentPo;
-import com.qzi.cms.common.vo.CallVo;
-import com.qzi.cms.common.vo.UseMessageVo;
-import com.qzi.cms.common.vo.UseResidentVo;
-import com.qzi.cms.common.vo.UseRoomVo;
 import com.qzi.cms.server.base.BaseMapper;
 
 /**
@@ -44,6 +42,77 @@ public interface UseResidentMapper  extends BaseMapper<UseResidentPo>{
 	 * @return
 	 */
 	public long findCount(@Param("criteria") String criteria,@Param("uid") String id);
+
+
+	/**
+	 * @param rwoBounds
+	 * @param criteria
+	 * @param id
+	 * @return
+	 */
+	public List<UseResidentVo> residentList(RowBounds rwoBounds,@Param("criteria") String criteria);
+
+
+	/**
+	 * @param criteria
+	 * @param id
+	 * @return
+	 */
+	public long residentCount(@Param("criteria") String criteria);
+
+	/**
+	 * @param rwoBounds
+	 * @param criteria
+	 * @param id
+	 * @return
+	 */
+	public List<UseResidentRoomVo> authList(RowBounds rwoBounds, @Param("criteria") String criteria, @Param("communityId") String communityId);
+
+
+	public List<UseResidentRoomVo> authListDetail(@Param("residentId") String residentId);
+
+
+	/**
+	 * 删除用户
+	 * @param id
+	 */
+	@Delete("DELETE FROM use_resident WHERE id = #{id}")
+	public void delResident(@Param("id") String id);
+
+	/**
+	 * 修改用户
+	 * @param id
+	 */
+	@Delete("update use_resident  set state = #{state}  WHERE id = #{id}")
+	public void updateResident(@Param("id") String id,@Param("state") String state);
+
+
+	/**
+	 * 删除授权
+	 */
+	@Delete("DELETE FROM use_resident_room WHERE id = #{id}")
+	public void delAuth(@Param("id") String id);
+
+	/**
+	 * 删除用户授权
+	 */
+	@Delete("DELETE FROM use_resident_room WHERE residentId = #{id}")
+	public void delAuthResidentId(@Param("id") String id);
+
+	/**
+	 * 修改授权
+	 */
+	@Update("update use_resident_room set owner =#{owner} where id= #{id}")
+	public void updateAuth(@Param("id") String id,@Param("owner") String  owner);
+
+
+
+	/**
+	 * @param criteria
+	 * @param id
+	 * @return
+	 */
+	public long authCount(@Param("criteria") String criteria,@Param("communityId") String communityId);
 
 
 	/**

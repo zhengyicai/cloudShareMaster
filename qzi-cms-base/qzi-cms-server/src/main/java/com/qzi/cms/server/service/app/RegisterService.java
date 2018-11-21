@@ -5,6 +5,7 @@ import com.qzi.cms.common.po.UseCommunityPo;
 import com.qzi.cms.common.po.UseResidentPo;
 import com.qzi.cms.common.resp.Paging;
 import com.qzi.cms.common.vo.UseBuildingVo;
+import com.qzi.cms.common.vo.UseResidentVo;
 import com.qzi.cms.common.vo.UseRoomVo;
 
 import java.util.List;
@@ -44,5 +45,13 @@ public interface RegisterService {
     public UseRoomVo findRoom(String buildingId,String utilName,String roomName);
 
     public void updateRegister(UseResidentPo po);
+
+
+    /**
+     * 添加小区
+     * @param residentVo
+     * @throws Exception
+     */
+    public void addCommunity(UseResidentVo residentVo) throws Exception;
 
 }

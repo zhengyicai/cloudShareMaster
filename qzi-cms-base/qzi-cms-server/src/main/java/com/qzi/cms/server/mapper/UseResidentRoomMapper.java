@@ -7,6 +7,7 @@
 */
 package com.qzi.cms.server.mapper;
 
+import com.qzi.cms.common.po.UseResidentPo;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
@@ -28,6 +29,9 @@ public interface UseResidentRoomMapper extends BaseMapper<UseResidentRoomPo>{
 	 */
 	@Select("SELECT count(1)>0 from use_resident_room where residentId =#{vo.residentId} and roomId =#{vo.roomId}")
 	public boolean existsRelation(@Param("vo") UseResidentRoomVo residentRoomVo);
+
+	@Select("SELECT * from use_resident_room where residentId =#{residentId} and roomId =#{roomId} limit 1")
+	public UseResidentRoomPo existsRoom(@Param("roomId") String roomId, @Param("residentId") String residentId);
 
 	/**
 	 * @param id

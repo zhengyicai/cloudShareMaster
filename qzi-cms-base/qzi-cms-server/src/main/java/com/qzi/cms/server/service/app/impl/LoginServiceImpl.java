@@ -12,7 +12,12 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.qzi.cms.common.enums.RespCodeEnum;
+import com.qzi.cms.common.enums.StateEnum;
+import com.qzi.cms.common.resp.RespBody;
 import com.qzi.cms.common.util.YBBeanUtils;
+import com.qzi.cms.common.vo.SysUserVo;
+import com.qzi.cms.server.mapper.SysUserMapper;
 import com.qzi.cms.server.mapper.UseCommunityResidentMapper;
 import org.springframework.stereotype.Service;
 
@@ -46,6 +51,8 @@ public class LoginServiceImpl implements LoginService {
 	private NewResidentService newResidentService;
 	@Resource
 	private UseCommunityResidentMapper useCommunityResidentMapper;
+	@Resource
+	private SysUserMapper userMapper;
 	
 
 	@Override
@@ -87,6 +94,60 @@ public class LoginServiceImpl implements LoginService {
 		return token;
 	}
 
+	/**
+	 * 管理员登录
+	 * @param loginVo
+	 * @return
+	 * @throws CommException
+	 */
+	@Override
+	public String LoginInSys(LoginVo loginVo) throws CommException {
+
+		String token = ToolUtils.getUUID();
+		//验证码是否正确
+
+			//验证码正确,查询用户信息
+			SysUserVo userVo = userMapper.findByloginName(loginVo.getLoginName());
+			// 是否查找到用户信息
+			if (userVo == null) {
+				throw new CommException("登录用户不存在");
+
+
+			} else {
+
+
+				if(!userVo.getRoleId().equals("7541f8cd47ca45edb046e06dc9bb2f1a")){
+					throw new CommException("登录用户不存在");
+				}
+				// 存在用户，判断是否有效
+				if (userVo.getState().equals(StateEnum.DISABLE.getCode())) {
+					// 无效用户
+					throw new CommException("登录用户已被禁用，请联系管理员！");
+				} else {
+					// 用户有效，对输入密码进行加密
+					String loginPw = CryptUtils.hmacSHA1Encrypt(loginVo.getPassword(), userVo.getSalt());
+					// 验证密码是否正确
+					if (loginPw.equals(userVo.getPassword())) {
+
+						String token1 = ToolUtils.getUUID();
+
+						if (!redisService.putObj(token1, userVo, confUtils.getSessionTimeout()).equalsIgnoreCase("ok")) {
+							// 缓存用户信息失败
+							throw new CommException("缓存用户信息失败！");
+						} else {
+
+
+						  token = token1;
+						}
+					} else {
+						// 登录失败
+						throw new CommException("登录密码错误！");
+					}
+				}
+			}
+		return token;
+	}
+
 
 	public void appRegister(UseResidentVo residentVo){
 		if(residentMapper.existsMobile(residentVo.getMobile())){
@@ -97,6 +158,7 @@ public class LoginServiceImpl implements LoginService {
 
 		}
 	}
+
 
 
 	@Override
@@ -186,6 +248,10 @@ public class LoginServiceImpl implements LoginService {
 	public void updateName(UseResidentVo residentVo) throws Exception {
 		residentMapper.updateName(residentVo.getName(),residentVo.getMobile());
 	}
+
+
+
+
 
 
 }

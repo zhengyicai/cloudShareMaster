@@ -11,6 +11,8 @@ import javax.annotation.Resource;
 
 import com.qzi.cms.common.po.UseResidentPo;
 import com.qzi.cms.common.util.CryptUtils;
+import com.qzi.cms.common.vo.SysUserVo;
+import com.qzi.cms.server.mapper.SysUserMapper;
 import com.qzi.cms.server.service.app.RegisterService;
 import com.qzi.cms.server.service.common.CommonService;
 import org.apache.commons.lang3.StringUtils;
@@ -46,6 +48,10 @@ public class LoginController {
 	@Resource
 	private CommonService commonService;
 
+	@Resource
+	private SysUserMapper userMapper;
+
+
 
 
 	@PostMapping("/loginIn")
@@ -56,7 +62,18 @@ public class LoginController {
 		try {
 			//验证FormBean
 			if(hasErrors(loginVo,respBody)){
-				respBody.add(RespCodeEnum.SUCCESS.getCode(),"用户登录成功",loginService.LoginIn(loginVo));
+
+				SysUserVo userVo = userMapper.findByloginName(loginVo.getLoginName());
+
+				if(userVo==null){
+					respBody.add(RespCodeEnum.SUCCESS.getCode(),"用户登录成功",loginService.LoginIn(loginVo));
+
+				}else{
+					respBody.add("1000","用户登录成功",loginService.LoginInSys(loginVo));
+				}
+
+
+
 			}
 		} catch (CommException ex) {
 			respBody.add(RespCodeEnum.ERROR.getCode(), ex.getMessage());

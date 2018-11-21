@@ -88,4 +88,12 @@ public interface SysUserMapper extends BaseMapper<SysUserPo>{
 	@Update("update sys_user set password=#{password}  where id = #{id} ")
 	public void updatePassword(@Param("password")String password,@Param("id") String id);
 
+
+	/**
+	 * 2018-11-16
+	 * 查找该用户
+	 */
+	@Select("select * from sys_user where id = #{id}")
+	public SysUserVo findOne(@Param("id") String id);
+
 }
