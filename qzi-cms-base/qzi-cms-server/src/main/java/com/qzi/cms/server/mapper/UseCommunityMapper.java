@@ -70,4 +70,7 @@ public interface UseCommunityMapper extends BaseMapper<UseCommunityPo>{
 	public List<UseCommunityPo> regfindAll(@Param("model") UseCommunityPo po);
 	public Integer regfindCount(@Param("model") UseCommunityPo po);
 
+	@Select("SELECT uc.* from use_community uc  where uc.sysUserId=#{userId} and uc.state='10' limit 1")
+	public UseCommunityVo  findUser(@Param("userId") String  userId);
+
 }

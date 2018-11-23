@@ -113,7 +113,27 @@ public class EquipmentController {
 		}
 		return respBody;
 	}
-	
+
+
+	@GetMapping("/findOne")
+	public RespBody findOne(String id){
+		RespBody respBody = new RespBody();
+		try {
+			//保存返回数据
+
+			respBody.add(RespCodeEnum.SUCCESS.getCode(), "查找所有设备数据成功", communityService.findOne(id));
+
+		} catch (Exception ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), "查找所有设备数据失败");
+			LogUtils.error("查找所有设备数据失败！",ex);
+		}
+		return respBody;
+	}
+
+
+
+
+
 	@PostMapping("/add")
 	@SystemControllerLog(description="新增设备信息")
 	public RespBody add(@RequestBody UseEquipmentVo equipmentVo){

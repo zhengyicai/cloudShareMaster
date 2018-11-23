@@ -4,6 +4,7 @@ import com.qzi.cms.common.exception.CommException;
 import com.qzi.cms.common.po.*;
 import com.qzi.cms.common.util.ToolUtils;
 import com.qzi.cms.common.vo.UseBuildingVo;
+import com.qzi.cms.common.vo.UseResidentRoomVo;
 import com.qzi.cms.common.vo.UseResidentVo;
 import com.qzi.cms.common.vo.UseRoomVo;
 import com.qzi.cms.server.mapper.*;
@@ -93,8 +94,16 @@ public class RegisterServiceImpl implements RegisterService {
 
 
             }else{
-                UseResidentRoomPo usrRepo = new UseResidentRoomPo();
 
+                 if("10".equals(residentVo.getIsTrue())){
+                     useResidentRoomMapper.setDefault(residentVo.getId());
+                 }
+
+                 if( useResidentRoomMapper.findResidentExist(residentVo.getId()) ==null){
+                        residentVo.setIsTrue("10");
+                 }
+
+                UseResidentRoomPo usrRepo = new UseResidentRoomPo();
                 usrRepo.setId(ToolUtils.getUUID());
                 usrRepo.setCommunityId(residentVo.getCommunityId());
                 usrRepo.setOwner("20");
@@ -109,6 +118,12 @@ public class RegisterServiceImpl implements RegisterService {
         }else{
             throw new CommException("该小区房间号不存在");
         }
+    }
+
+    @Override
+    public void updateCommunityisTrue(UseResidentRoomVo useResidentRoomVo) {
+        useResidentRoomMapper.setDefault(useResidentRoomVo.getResidentId());
+        useResidentRoomMapper.setDefaultisTrue(useResidentRoomVo.getId());
     }
 
 

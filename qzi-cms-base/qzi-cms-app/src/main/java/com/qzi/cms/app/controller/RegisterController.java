@@ -178,6 +178,27 @@ public class RegisterController {
 		}
 		return respBody;
 
+	}
+
+	@PostMapping("/updateCommunityisTrue")
+	@SystemControllerLog(description="修复默认小区")
+	public RespBody updateCommunityisTrue(@RequestBody UseResidentRoomVo useResidentRoomVo) {
+
+		// 创建返回对象
+		RespBody respBody = new RespBody();
+		try {
+
+
+
+				registerService.updateCommunityisTrue(useResidentRoomVo);
+				respBody.add(RespCodeEnum.SUCCESS.getCode(),"添加默认小区成功");
+
+
+		}catch (Exception ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), "修改默认小区失败");
+			LogUtils.error("修改默认小区失败！",ex);
+		}
+		return respBody;
 
 	}
 

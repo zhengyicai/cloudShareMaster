@@ -8,9 +8,11 @@
 package com.qzi.cms.server.service.app;
 
 import java.lang.reflect.Parameter;
+import java.rmi.server.ExportException;
 import java.util.List;
 
 import com.qzi.cms.common.resp.Paging;
+import com.qzi.cms.common.vo.HomeUserCommunityVo;
 import com.qzi.cms.common.vo.SysParameterVo;
 import com.qzi.cms.common.vo.UseMessageVo;
 import com.qzi.cms.common.vo.UseNoticeVo;
@@ -51,5 +53,12 @@ public interface HomeService {
 	public long findMsgCount() throws Exception;
 
 	public List<SysParameterVo> paramfindAll() throws Exception;
+
+
+	/**
+	 * 获取用户绑定小区数据
+	 */
+
+	public HomeUserCommunityVo findHomeUser() throws Exception;
 
 }

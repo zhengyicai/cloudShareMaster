@@ -14,6 +14,7 @@ import org.apache.ibatis.annotations.Select;
 import com.qzi.cms.common.po.UseResidentRoomPo;
 import com.qzi.cms.common.vo.UseResidentRoomVo;
 import com.qzi.cms.server.base.BaseMapper;
+import org.apache.ibatis.annotations.Update;
 
 /**
  * 住户房间DAO
@@ -32,6 +33,25 @@ public interface UseResidentRoomMapper extends BaseMapper<UseResidentRoomPo>{
 
 	@Select("SELECT * from use_resident_room where residentId =#{residentId} and roomId =#{roomId} limit 1")
 	public UseResidentRoomPo existsRoom(@Param("roomId") String roomId, @Param("residentId") String residentId);
+
+	@Select("SELECT * from use_resident_room where residentId =#{residentId} and isTrue ='10' and owner='10' limit 1")
+	public UseResidentRoomPo findResidentDefault(@Param("residentId") String residentId);
+
+	@Update("update  use_resident_room set isTrue ='20' where residentId = #{residentId}")
+	public void setDefault(@Param("residentId") String residentId);
+
+
+
+	@Update("update  use_resident_room set isTrue ='10' where id = #{id}")
+	public void setDefaultisTrue(@Param("id") String id);
+
+
+
+
+
+	@Select("SELECT * from use_resident_room where residentId =#{residentId} limit 1")
+	public UseResidentRoomPo findResidentExist(@Param("residentId") String residentId);
+
 
 	/**
 	 * @param id

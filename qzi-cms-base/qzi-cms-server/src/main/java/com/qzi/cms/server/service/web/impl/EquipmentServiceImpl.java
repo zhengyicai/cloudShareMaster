@@ -105,19 +105,8 @@ public class EquipmentServiceImpl implements EquipmentService {
 			equipmentPo.setUnitName(null);
 		}
 		equipmentMapper.insert(equipmentPo);
-		//注册云之讯账号
-		//注册client账号
-		ClientVo client = new ClientVo();
-		client.setUserId(equipmentPo.getEquipmentId());
-		ClientRespVo clientResp = ToolUtils.toObject(clientUtils.createClient(client),ClientRespVo.class);
-		if(clientResp.getResp().getRespCode().equals("000000")){
-			equipmentPo.setClientNumber(clientResp.getResp().getClient().getClientNumber());
-			equipmentPo.setClientPwd(clientResp.getResp().getClient().getClientPwd());
-			equipmentPo.setLoginToken(clientResp.getResp().getClient().getLoginToken());
-			equipmentMapper.updateByPrimaryKey(equipmentPo);
-		}else{
-			throw new CommException("注册Client账号失败["+clientResp.getResp().getRespCode()+"]");
-		}
+
+
 	}
 
 	@Override

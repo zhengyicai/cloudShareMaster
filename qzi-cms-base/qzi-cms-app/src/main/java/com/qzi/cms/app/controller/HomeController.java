@@ -9,9 +9,12 @@ package com.qzi.cms.app.controller;
 
 import javax.annotation.Resource;
 
+import com.qzi.cms.common.po.UseResidentPo;
+import com.qzi.cms.common.util.YBBeanUtils;
 import com.qzi.cms.common.vo.ParamObjectVo;
 import com.qzi.cms.common.vo.SysParameterVo;
 import com.qzi.cms.common.vo.SysUnitVo;
+import com.qzi.cms.common.vo.UseResidentVo;
 import com.qzi.cms.server.mapper.SysParameterMapper;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -143,6 +146,41 @@ public class HomeController {
 		}
 		return respBody;
 	}
+
+	/**
+	 * 获取用户参数
+	 * @return
+	 */
+	@GetMapping("/findCommunityData")
+	public RespBody findCommunityData(){
+		RespBody respBody = new RespBody();
+		try {
+			respBody.add(RespCodeEnum.SUCCESS.getCode(), "参数查找成功",homeService.findHomeUser());
+
+		} catch (Exception ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), "查找个人消息记录数失败");
+			LogUtils.error("查找个人消息记录数失败！",ex);
+		}
+		return respBody;
+	}
+
+
+	@GetMapping("/testStatus")
+	public RespBody testStatus(){
+		RespBody respBody = new RespBody();
+		try {
+			respBody.add(RespCodeEnum.SUCCESS.getCode(), "参数查找成功","success");
+
+		} catch (Exception ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), "参数查找成功");
+			LogUtils.error("参数查找成功！",ex);
+		}
+		return respBody;
+	}
+
+
+
+
 	
 	
 	

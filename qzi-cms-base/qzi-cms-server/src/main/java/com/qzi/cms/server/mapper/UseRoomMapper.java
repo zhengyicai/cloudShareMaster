@@ -73,4 +73,6 @@ public interface UseRoomMapper extends BaseMapper<UseRoomPo>{
 	@Select("SELECT uro.roomName from use_resident_room urr,use_room uro where urr.roomId = uro.id and urr.residentId=#{rid} and roomNo LIKE CONCAT(#{eid},'%') and uro.state='10'")
 	public List<String> findEquRooms(@Param("rid") String residentId,@Param("eid") String equipmentId);
 
+	@Select("select * from use_room where id = #{id}")
+	public UseRoomPo findOne(@Param("id") String id);
 }

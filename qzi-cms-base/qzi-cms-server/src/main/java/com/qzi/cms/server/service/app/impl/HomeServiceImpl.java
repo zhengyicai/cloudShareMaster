@@ -10,18 +10,20 @@ package com.qzi.cms.server.service.app.impl;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
+import com.qzi.cms.common.po.SysUserPo;
+import com.qzi.cms.common.po.UseCommunityPo;
+import com.qzi.cms.common.po.UseResidentPo;
+import com.qzi.cms.common.po.UseResidentRoomPo;
 import com.qzi.cms.common.resp.Paging;
-import com.qzi.cms.common.vo.SysParameterVo;
-import com.qzi.cms.server.mapper.SysParameterMapper;
+import com.qzi.cms.common.service.RedisService;
+import com.qzi.cms.common.util.YBBeanUtils;
+import com.qzi.cms.common.vo.*;
+import com.qzi.cms.server.mapper.*;
+import com.qzi.cms.server.service.web.UserService;
 import org.springframework.stereotype.Service;
 
-import com.qzi.cms.common.vo.UseMessageVo;
-import com.qzi.cms.common.vo.UseNoticeVo;
-import com.qzi.cms.common.vo.UseResidentVo;
-import com.qzi.cms.server.mapper.UseBannerMapper;
-import com.qzi.cms.server.mapper.UseMessageMapper;
-import com.qzi.cms.server.mapper.UseNoticeMapper;
 import com.qzi.cms.server.service.app.HomeService;
 import com.qzi.cms.server.service.common.CommonService;
 
@@ -43,6 +45,26 @@ public class HomeServiceImpl implements HomeService {
 	private CommonService commonServcie;
 	@Resource
 	private SysParameterMapper sysParameterMapper;
+
+
+	@Resource
+	private UseCommunityMapper useCommunityMapper;
+
+	@Resource
+	private UseEquipmentMapper useEquipmentMapper;
+
+	@Resource
+	private   UseResidentRoomMapper useResidentRoomMapper;
+	@Resource
+	private HttpServletRequest request;
+	@Resource
+	private UserService userService;
+	@Resource
+	private RedisService redisService;
+
+	@Resource
+	private UseRoomMapper useRoomMapper;
+
 
 	@Override
 	public List<String> findBanners() {
@@ -76,6 +98,50 @@ public class HomeServiceImpl implements HomeService {
 	@Override
 	public List<SysParameterVo> paramfindAll() throws Exception {
 		return sysParameterMapper.findAllApp();
+	}
+
+	@Override
+	public HomeUserCommunityVo findHomeUser() throws Exception {
+
+
+		HomeUserCommunityVo homeVo = new HomeUserCommunityVo();
+		String token = request.getHeader("token");
+		UseResidentVo residentVo = null;
+		SysUserVo sysUserVo = null;
+		Object obj = redisService.getObj(token);
+		if(obj != null && obj instanceof UseResidentPo){
+			residentVo = YBBeanUtils.copyProperties(obj, UseResidentVo.class);
+			homeVo.setUserName(residentVo.getName());
+			UseResidentRoomPo useResidentRoomPo =   useResidentRoomMapper.findResidentDefault(residentVo.getId());
+			if(useResidentRoomPo != null){
+				UseCommunityPo useVo = useCommunityMapper.findOne(useResidentRoomPo.getCommunityId());
+				homeVo.setAreaCode(useVo.getCommunityNo());
+				homeVo.setCsCode(useVo.getCode());
+				homeVo.setCommunity(useVo.getId());
+				homeVo.setCommunityName(useVo.getCommunityName());
+
+
+				homeVo.setRoomId(useRoomMapper.findOne(useResidentRoomPo.getRoomId()).getRoomNo());
+			}else{
+
+			}
+
+		}else if(obj != null && obj instanceof SysUserVo){
+		    sysUserVo = YBBeanUtils.copyProperties(obj, SysUserVo.class);
+		    UseCommunityVo useVo =   useCommunityMapper.findUser(sysUserVo.getId());
+			if(useVo!=null){
+				homeVo.setAreaCode(useVo.getCommunityNo());
+				homeVo.setCsCode(useVo.getCode());
+				homeVo.setCommunity(useVo.getId());
+				homeVo.setCommunityName(useVo.getCommunityName());
+				homeVo.setEquList(useEquipmentMapper.communityIdList(useVo.getId()));
+				homeVo.setUserName(sysUserVo.getLoginName());
+			}
+
+		}
+
+
+		return homeVo;
 	}
 
 }

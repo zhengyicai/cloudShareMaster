@@ -106,6 +106,30 @@ public class UseEquipmentVo {
 	 */
 	private String nowDateStatus;
 
+	/**
+	 * 设备识别码
+	 */
+	private String equCode;
+	/**
+	 * 序列号
+	 */
+	private String  equId;
+
+	public String getEquCode() {
+		return equCode;
+	}
+
+	public void setEquCode(String equCode) {
+		this.equCode = equCode;
+	}
+
+	public String getEquId() {
+		return equId;
+	}
+
+	public void setEquId(String equId) {
+		this.equId = equId;
+	}
 
 	public String getUnitId() {
 		return unitId;

@@ -64,15 +64,7 @@ public class LoginServiceImpl implements LoginService {
 			// 不存在
 			throw new CommException("登录用户不存在");
 		} else {
-			System.out.print(useCommunityResidentMapper.existsLoginCR(resident.getId()));
-			if(useCommunityResidentMapper.existsLoginCR(resident.getId())){
-				System.out.print(useCommunityResidentMapper.existsLoginCR(resident.getId()));
-				//throw new CommException("该账号已被管理员取消，请重新注册！");
-			}else if(useCommunityResidentMapper.existsLoginOutCR(resident.getId())){
-				throw new CommException("该账号正在审核中");
-			}else{
-				throw new CommException("该账号已被管理员删除，请重新注册！");
-			}
+
 			// 用户有效，对输入密码进行加密
 			String loginPw = CryptUtils.hmacSHA1Encrypt(loginVo.getPassword(), resident.getSalt());
 			// 验证密码是否正确

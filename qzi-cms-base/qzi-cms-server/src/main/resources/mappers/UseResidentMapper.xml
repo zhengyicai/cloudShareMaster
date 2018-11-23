@@ -98,7 +98,7 @@
 				and   uroom.residentId = #{residentId}
 			</if>
 		</where>
-
+		order by  uroom.isTrue asc
 	</select>
 
 

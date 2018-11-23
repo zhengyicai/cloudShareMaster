@@ -5,6 +5,7 @@ import com.qzi.cms.common.po.UseCommunityPo;
 import com.qzi.cms.common.po.UseResidentPo;
 import com.qzi.cms.common.resp.Paging;
 import com.qzi.cms.common.vo.UseBuildingVo;
+import com.qzi.cms.common.vo.UseResidentRoomVo;
 import com.qzi.cms.common.vo.UseResidentVo;
 import com.qzi.cms.common.vo.UseRoomVo;
 
@@ -53,5 +54,7 @@ public interface RegisterService {
      * @throws Exception
      */
     public void addCommunity(UseResidentVo residentVo) throws Exception;
+
+    public void updateCommunityisTrue(UseResidentRoomVo useResidentRoomVo);
 
 }

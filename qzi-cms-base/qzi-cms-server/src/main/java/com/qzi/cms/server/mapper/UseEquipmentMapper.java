@@ -114,5 +114,8 @@ public interface UseEquipmentMapper extends BaseMapper<UseEquipmentPo>{
 	@Select("select count(1) from use_equipment where communityId = #{communityId} and state = '10'")
 	public Integer communityIdCount(@Param("communityId") String communityId);
 
+	@Select("SELECT * from use_equipment where communityId=#{communityId} and state = '10'")
+	public List<UseEquipmentVo> communityIdList(@Param("communityId") String communityId);
+
 
 }
