@@ -8,26 +8,22 @@
 package com.qzi.cms.server.service.web.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
 
-import com.qzi.cms.common.po.SysUnitPo;
-import com.qzi.cms.common.po.SysUserPo;
+import com.qzi.cms.common.po.*;
+import com.qzi.cms.common.util.ToolUtils;
 import com.qzi.cms.common.vo.SysUnitVo;
-import com.qzi.cms.server.mapper.UseUnitMapper;
+import com.qzi.cms.server.mapper.*;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Service;
 
-import com.qzi.cms.common.po.UseBuildingPo;
-import com.qzi.cms.common.po.UseRoomPo;
 import com.qzi.cms.common.resp.Paging;
 import com.qzi.cms.common.util.YBBeanUtils;
 import com.qzi.cms.common.vo.TreeVo;
 import com.qzi.cms.common.vo.UseRoomVo;
-import com.qzi.cms.server.mapper.UseBuildingMapper;
-import com.qzi.cms.server.mapper.UseCommunityMapper;
-import com.qzi.cms.server.mapper.UseRoomMapper;
 import com.qzi.cms.server.service.web.RoomService;
 
 /**
@@ -47,6 +43,9 @@ public class RoomServiceImpl implements RoomService {
 	private UseUnitMapper useUnitMapper;
 	@Resource
 	private UseRoomMapper roomMapper;
+
+	@Resource
+	private UseRoomCardMapper  useRoomCardMapper;
 
 	@Override
 	public List<TreeVo> findTree(String userId) {
@@ -132,5 +131,38 @@ public class RoomServiceImpl implements RoomService {
 		UseRoomPo roomPo = YBBeanUtils.copyProperties(roomVo, UseRoomPo.class);
 		roomMapper.updateByPrimaryKey(roomPo);
 	}
-	
+
+	@Override
+	public void addCard(UseRoomCardPo useRoomCardPo) {
+
+		useRoomCardPo.setState("10");
+		useRoomCardPo.setId(ToolUtils.getUUID());
+		useRoomCardPo.setCreateTime(new Date());
+
+
+
+		useRoomCardMapper.insert(useRoomCardPo);
+	}
+
+	@Override
+	public void updateCard(UseRoomCardPo useRoomCardPo) {
+		useRoomCardMapper.updateByPrimaryKey(useRoomCardPo);
+
+	}
+
+	@Override
+	public void deleteCard(UseRoomCardPo useRoomCardPo) {
+		useRoomCardMapper.deleteByPrimaryKey(useRoomCardPo);
+	}
+
+	@Override
+	public void deleteRoomId(String roomId) {
+		useRoomCardMapper.deleteRoomId(roomId);
+	}
+
+	@Override
+	public List<UseRoomCardPo> cardList(String roomId) {
+		return useRoomCardMapper.findRoomCard(roomId);
+	}
+
 }

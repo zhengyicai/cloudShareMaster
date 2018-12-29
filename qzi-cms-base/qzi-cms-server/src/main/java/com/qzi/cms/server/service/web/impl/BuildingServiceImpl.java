@@ -139,14 +139,14 @@ public class BuildingServiceImpl implements BuildingService {
 		UseCommunityPo communityPo = communityMapper.selectByPrimaryKey(buildPo.getCommunityId());
 		//生成房间
 		for(int u=1;u<=buildingVo.getUnitNumber();u++){
-			for(int f=1;f<=buildPo.getFloorNumber();f++){
-				for(int r=1;r<=buildPo.getRoomNumber();r++){
+			for(int f=1;f<=buildingVo.getFloorNumber();f++){
+				for(int r=1;r<=buildingVo.getRoomNumber();r++){
 					UseRoomPo roomPo = new UseRoomPo();
 					roomPo.setUnitName(String.format("%02d", u));
 					roomPo.setId(ToolUtils.getUUID());
 					roomPo.setBuildingId(buildPo.getId());
 					roomPo.setState(StateEnum.NORMAL.getCode());
-					roomPo.setRoomNo(communityPo.getCommunityNo()+buildPo.getBuildingNo()+String.format("%02d", u)+String.format("%02d", f)+String.format("%02d", r));
+					roomPo.setRoomNo(communityPo.getCommunityNo()+String.format("%02d", Integer.parseInt(buildingVo.getBuildingNo()))+String.format("%02d", Integer.parseInt(buildingVo.getUnitName()))+String.format("%02d", f)+String.format("%02d", r));
 					roomPo.setRoomName(f+String.format("%02d", r));
 					roomPo.setCommunityId(buildPo.getCommunityId());
 					roomPo.setUnitId(unitPo.getId());

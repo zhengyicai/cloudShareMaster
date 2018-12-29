@@ -9,22 +9,22 @@ package com.qzi.cms.app.controller;
 
 import javax.annotation.Resource;
 
+import com.mysql.jdbc.Blob;
 import com.qzi.cms.common.po.UseResidentPo;
+import com.qzi.cms.common.util.SoundwavUtils;
 import com.qzi.cms.common.util.YBBeanUtils;
-import com.qzi.cms.common.vo.ParamObjectVo;
-import com.qzi.cms.common.vo.SysParameterVo;
-import com.qzi.cms.common.vo.SysUnitVo;
-import com.qzi.cms.common.vo.UseResidentVo;
+import com.qzi.cms.common.vo.*;
 import com.qzi.cms.server.mapper.SysParameterMapper;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.qzi.cms.common.enums.RespCodeEnum;
 import com.qzi.cms.common.resp.RespBody;
 import com.qzi.cms.common.util.LogUtils;
 import com.qzi.cms.server.service.app.HomeService;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -38,7 +38,7 @@ import java.util.List;
 public class HomeController {
 	@Resource
 	private HomeService homeService;
-	
+
 	/**
 	 * 查找首页轮播图
 	 * @return
@@ -135,6 +135,8 @@ public class HomeController {
 							po.setIosForceUpdate(vo.getParaValue());
 						}else if(vo.getParaName().equals("serviceUpdate")){
 							po.setServiceUpdate(vo.getParaValue());
+						}else if(vo.getParaName().equals("buttonShow")){
+							po.setButtonShow(vo.getParaValue());
 						}
 				}
 			}
@@ -165,11 +167,52 @@ public class HomeController {
 	}
 
 
-	@GetMapping("/testStatus")
-	public RespBody testStatus(){
+	@GetMapping("/findRoomCardData")
+	public RespBody findRoomCardData(String communityId){
 		RespBody respBody = new RespBody();
 		try {
-			respBody.add(RespCodeEnum.SUCCESS.getCode(), "参数查找成功","success");
+
+			//查找数据并返回
+			respBody.add(RespCodeEnum.SUCCESS.getCode(), "获取楼栋树菜单成功",homeService.findTree(communityId));
+
+		} catch (Exception ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), "查找个人消息记录数失败");
+			LogUtils.error("查找个人消息记录数失败！",ex);
+		}
+		return respBody;
+	}
+
+
+
+	@GetMapping("/testStatus")
+	public RespBody testStatus() throws  Exception{
+		RespBody respBody = new RespBody();
+
+		byte[] bt ={(byte)176,(byte)7, (byte)164,(byte)1, (byte)1, (byte)1, (byte)1, (byte)1, (byte)35, (byte)142, (byte)202, (byte)144};
+
+		SoundwavUtils.PlaySound(bt);
+
+		return respBody;
+	}
+
+	//上传字符串数组
+	@PostMapping("/upload")
+	public RespBody upload(@RequestBody int[] blob){
+		RespBody respBody = new RespBody();
+		try {
+
+
+            byte[] bt = new byte[blob.length];
+		    for(int i = 0 ;i<blob.length;i++){
+		        bt[i] = (byte) blob[i];
+            }
+
+			String str=    SoundwavUtils.PlaySound(bt);
+		    respBody.add(RespCodeEnum.SUCCESS.getCode(), "参数查找成功",str);
+
+
+
+
 
 		} catch (Exception ex) {
 			respBody.add(RespCodeEnum.ERROR.getCode(), "参数查找成功");

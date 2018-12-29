@@ -11,11 +11,9 @@ import java.lang.reflect.Parameter;
 import java.rmi.server.ExportException;
 import java.util.List;
 
+import com.qzi.cms.common.po.UseBuildingPo;
 import com.qzi.cms.common.resp.Paging;
-import com.qzi.cms.common.vo.HomeUserCommunityVo;
-import com.qzi.cms.common.vo.SysParameterVo;
-import com.qzi.cms.common.vo.UseMessageVo;
-import com.qzi.cms.common.vo.UseNoticeVo;
+import com.qzi.cms.common.vo.*;
 
 /**
  * 首页业务层接口
@@ -60,5 +58,13 @@ public interface HomeService {
 	 */
 
 	public HomeUserCommunityVo findHomeUser() throws Exception;
+
+	/**
+	 * 查找楼栋单元树型菜单
+	 * @param id
+	 * @return
+	 */
+	public List<TreeVo> findTree(String id);
+
 
 }

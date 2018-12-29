@@ -7,15 +7,13 @@
 */
 package com.qzi.cms.server.service.app.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
-import com.qzi.cms.common.po.SysUserPo;
-import com.qzi.cms.common.po.UseCommunityPo;
-import com.qzi.cms.common.po.UseResidentPo;
-import com.qzi.cms.common.po.UseResidentRoomPo;
+import com.qzi.cms.common.po.*;
 import com.qzi.cms.common.resp.Paging;
 import com.qzi.cms.common.service.RedisService;
 import com.qzi.cms.common.util.YBBeanUtils;
@@ -64,6 +62,15 @@ public class HomeServiceImpl implements HomeService {
 
 	@Resource
 	private UseRoomMapper useRoomMapper;
+	@Resource
+	private UseBuildingMapper buildMapper;
+
+	@Resource
+	private UseUnitMapper useUnitMapper;
+
+
+	@Resource
+	private UseRoomCardMapper useRoomCardMapper;
 
 
 	@Override
@@ -142,6 +149,53 @@ public class HomeServiceImpl implements HomeService {
 
 
 		return homeVo;
+	}
+
+	@Override
+	public List<TreeVo> findTree(String id) {
+
+		TreeVo buildingTV = null;
+		TreeVo unitTV = null;
+
+		TreeVo treeVo = new TreeVo();
+		List<UseBuildingPo> builds = buildMapper.findByCommunityId(id);
+		List<TreeVo> buildtvs = new ArrayList<>();
+		treeVo.setChildren(buildtvs);
+		//楼栋
+		if(builds.size()>0){
+			for(UseBuildingPo ubp:builds){
+				buildingTV = new TreeVo();
+				buildingTV.setId(ubp.getId());
+				buildingTV.setValue(ubp.getBuildingName());
+				buildingTV.setLabel(ubp.getBuildingName());
+				List<TreeVo> unittvs = new ArrayList<>();
+
+				//单元
+				SysUnitPo unitPo = new SysUnitPo();
+				unitPo.setBuildingId(ubp.getId());
+				List<SysUnitVo> unit = useUnitMapper.findAll(unitPo);
+				if(unit.size()>0){
+					List<TreeVo> utiltvs = new ArrayList<>();
+					for(int u=0;u<unit.size();u++){
+
+						unitTV = new TreeVo();
+						unitTV.setId(unit.get(u).getId());
+						unitTV.setParentId(ubp.getId());
+						unitTV.setValue(unit.get(u).getUnitName());
+						unitTV.setLabel(unit.get(u).getUnitName());
+						unitTV.setChildren(useRoomCardMapper.findUnitRoomCard(unit.get(u).getId()));
+						unittvs.add(unitTV);
+
+					}
+
+				}
+				buildingTV.setChildren(unittvs);
+
+				buildtvs.add(buildingTV);
+			}
+		}
+
+		return buildtvs;
 	}
 
 }

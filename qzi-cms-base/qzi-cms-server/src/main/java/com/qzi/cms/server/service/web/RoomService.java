@@ -9,6 +9,7 @@ package com.qzi.cms.server.service.web;
 
 import java.util.List;
 
+import com.qzi.cms.common.po.UseRoomCardPo;
 import com.qzi.cms.common.resp.Paging;
 import com.qzi.cms.common.vo.TreeVo;
 import com.qzi.cms.common.vo.UseRoomVo;
@@ -51,5 +52,16 @@ public interface RoomService {
 	 * @throws Exception 异常
 	 */
 	public void update(UseRoomVo roomVo) throws Exception;
+
+
+	/**
+	 *
+	 */
+	public void addCard(UseRoomCardPo useRoomCardPo);
+	public void updateCard(UseRoomCardPo useRoomCardPo);
+	public void deleteCard(UseRoomCardPo useRoomCardPo);
+	public void deleteRoomId(String roomId);
+	public List<UseRoomCardPo> cardList(String  roomId);
+
 
 }

@@ -73,7 +73,7 @@ public interface UseBuildingMapper extends BaseMapper<UseBuildingPo>{
 		 * @param communityId
 		 * @return
 		 */
-	@Select("select DISTINCT buildingName name, id value,communityId from use_building where communityId = #{communityId} order by buildingNo asc")
+	@Select("select DISTINCT buildingName name, id value,communityId from use_building where communityId = #{communityId} order by buildingName asc")
 	public List<OptionVo> findOneBuildings(@Param("communityId") String communityId);
 
 	/**

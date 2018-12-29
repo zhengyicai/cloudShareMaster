@@ -10,6 +10,8 @@ package com.qzi.cms.web.controller;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.qzi.cms.common.po.UseRoomCardPo;
+import com.qzi.cms.common.vo.UseRoomCardVo;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -85,5 +87,84 @@ public class RoomController {
 		}
 		return respBody;
 	}
+
+
+	@GetMapping("/findCards")
+	public RespBody findCards(String roomId){
+		RespBody respBody = new RespBody();
+		try {
+			//查找数据并返回
+			respBody.add(RespCodeEnum.SUCCESS.getCode(), "获取房卡信息成功",roomService.cardList(roomId));
+
+		} catch (Exception ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), "获取房卡信息异常");
+			LogUtils.error("获取房卡信息异常！",ex);
+		}
+		return respBody;
+	}
+
+	@PostMapping("/updateCard")
+	public RespBody updateCard(@RequestBody UseRoomCardPo useRoomCardPo){
+		RespBody respBody = new RespBody();
+		try {
+			roomService.updateCard(useRoomCardPo);
+			respBody.add(RespCodeEnum.SUCCESS.getCode(), "房卡修改成功");
+		} catch (Exception ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), "房卡修改失败");
+			LogUtils.error("房卡修改失败！",ex);
+		}
+		return respBody;
+	}
+
+	@PostMapping("/deleteCard")
+	public RespBody deleteCard(@RequestBody UseRoomCardPo useRoomCardPo){
+		RespBody respBody = new RespBody();
+		try {
+			roomService.deleteCard(useRoomCardPo);
+			respBody.add(RespCodeEnum.SUCCESS.getCode(), "房卡删除成功");
+		} catch (Exception ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), "房卡删除失败");
+			LogUtils.error("房卡删除失败！",ex);
+		}
+		return respBody;
+	}
+
+
+	@PostMapping("/addCard")
+	public RespBody addCard(@RequestBody UseRoomCardVo useRoomCardVo){
+		RespBody respBody = new RespBody();
+		try {
+
+			UseRoomCardPo  po = new UseRoomCardPo();
+			roomService.deleteRoomId(useRoomCardVo.getRoomId());
+
+			String[] roomList = useRoomCardVo.getCardNos().split(",");
+			for(int i = 0 ;i<roomList.length;i++){
+				if(!("".equals(roomList[i]))){
+					po.setRoomId(useRoomCardVo.getRoomId());
+					po.setCardNo(Integer.parseInt(roomList[i]) );
+					po.setBuildingId(useRoomCardVo.getBuildingId());
+					po.setCommunityId(useRoomCardVo.getCommunityId());
+					po.setUnitId(useRoomCardVo.getUnitId());
+					roomService.addCard(po);
+				}
+
+			}
+			respBody.add(RespCodeEnum.SUCCESS.getCode(), "房卡添加成功");
+
+		} catch (Exception ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), "房卡添加失败");
+			LogUtils.error("房卡添加失败！",ex);
+		}
+		return respBody;
+	}
+
+
+
+
+
+
+
+
 	
 }
