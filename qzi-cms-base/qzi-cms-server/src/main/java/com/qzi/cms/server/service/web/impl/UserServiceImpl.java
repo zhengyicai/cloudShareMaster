@@ -242,4 +242,9 @@ public class UserServiceImpl implements UserService {
 		return userMapper.findOne(id);
 	}
 
+	@Override
+	public Integer maxCode(String parentId) {
+		return userMapper.maxCode(parentId);
+	}
+
 }

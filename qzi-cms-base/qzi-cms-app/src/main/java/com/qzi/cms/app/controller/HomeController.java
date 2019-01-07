@@ -10,11 +10,16 @@ package com.qzi.cms.app.controller;
 import javax.annotation.Resource;
 
 import com.mysql.jdbc.Blob;
+import com.qzi.cms.common.annotation.SystemControllerLog;
+import com.qzi.cms.common.exception.CommException;
+import com.qzi.cms.common.po.UseLockRecordPo;
 import com.qzi.cms.common.po.UseResidentPo;
+import com.qzi.cms.common.resp.Paging;
 import com.qzi.cms.common.util.SoundwavUtils;
 import com.qzi.cms.common.util.YBBeanUtils;
 import com.qzi.cms.common.vo.*;
 import com.qzi.cms.server.mapper.SysParameterMapper;
+import com.qzi.cms.server.service.app.LockRecordService;
 import org.springframework.web.bind.annotation.*;
 
 import com.qzi.cms.common.enums.RespCodeEnum;
@@ -25,6 +30,7 @@ import com.qzi.cms.server.service.app.HomeService;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -38,6 +44,10 @@ import java.util.List;
 public class HomeController {
 	@Resource
 	private HomeService homeService;
+
+
+	@Resource
+	private LockRecordService lockRecordService;
 
 	/**
 	 * 查找首页轮播图
@@ -221,6 +231,78 @@ public class HomeController {
 		return respBody;
 	}
 
+
+	/**
+	 * 添加开锁
+	 * @param
+	 * @return
+	 */
+	@PostMapping("/addLock")
+	@SystemControllerLog(description="添加开锁")
+	public RespBody addLock(@RequestBody UseLockRecordVo useLockRecordVo) {
+		// 创建返回对象
+		RespBody respBody = new RespBody();
+		try {
+
+			UseLockRecordPo  uselock =  YBBeanUtils.copyProperties(useLockRecordVo, UseLockRecordPo.class);
+			//uselock.setCreateTime(new Date());
+			lockRecordService.add(uselock);
+
+		} catch (Exception ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), "添加开锁失败");
+			LogUtils.error("添加开锁失败！",ex);
+		}
+		return respBody;
+	}
+
+
+	@PostMapping("/uploadLockRecord")
+	@SystemControllerLog(description="上传开锁记录")
+	public RespBody uploadLockRecord(@RequestBody List<UseLockRecordVo> useLockRecordVos) {
+		// 创建返回对象
+		RespBody respBody = new RespBody();
+		try {
+
+			for(UseLockRecordVo vo:useLockRecordVos){
+				UseLockRecordPo  uselock =  YBBeanUtils.copyProperties(vo, UseLockRecordPo.class);
+				lockRecordService.add(uselock);
+			}
+
+
+		} catch (Exception ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), "添加开锁失败");
+			LogUtils.error("添加开锁失败！",ex);
+		}
+		return respBody;
+	}
+
+
+	/**
+	 * 开锁记录
+	 * @param userId
+	 * @return
+	 */
+
+	@GetMapping("/findLockRecord")
+	public RespBody findLockRecord(String userId,Paging paging){
+		RespBody respBody = new RespBody();
+		try {
+
+			//查找数据并返回
+			UseLockRecordVo vo = new UseLockRecordVo();
+			vo.setUserId(userId);
+
+
+			respBody.add(RespCodeEnum.SUCCESS.getCode(), "获取开锁记录成功",lockRecordService.findAll(vo,paging));
+			paging.setTotalCount(lockRecordService.findCount(vo));
+			respBody.setPage(paging);
+
+		} catch (Exception ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), "获取开锁记录失败");
+			LogUtils.error("获取开锁记录失败！",ex);
+		}
+		return respBody;
+	}
 
 
 

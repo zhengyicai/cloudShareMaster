@@ -10,7 +10,7 @@ package com.qzi.cms.common.po;
 import javax.persistence.Table;
 
 /**
- * 住宅小区管理员关系Po
+ * 厂商关联表（权限显示用）
  * @author qsy
  * @version v1.0
  * @date 2017年6月29日

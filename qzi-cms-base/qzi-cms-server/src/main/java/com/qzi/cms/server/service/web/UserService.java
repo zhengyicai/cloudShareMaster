@@ -125,4 +125,6 @@ public interface UserService {
 
 	public SysUserVo findOne(String id);
 
+	public Integer maxCode(String parentId);
+
 }

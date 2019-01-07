@@ -8,13 +8,18 @@
 package com.qzi.cms.app.controller;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 
 import com.qzi.cms.common.po.UseResidentPo;
+import com.qzi.cms.common.service.RedisService;
+import com.qzi.cms.common.util.ConfUtils;
 import com.qzi.cms.common.util.CryptUtils;
 import com.qzi.cms.common.vo.SysUserVo;
+import com.qzi.cms.common.vo.UpdatePwVo;
 import com.qzi.cms.server.mapper.SysUserMapper;
 import com.qzi.cms.server.service.app.RegisterService;
 import com.qzi.cms.server.service.common.CommonService;
+import com.qzi.cms.server.service.web.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,6 +56,16 @@ public class LoginController {
 	@Resource
 	private SysUserMapper userMapper;
 
+
+	@Resource
+	private UserService userService;//用户业务层
+	@Resource
+	private HttpServletRequest request;
+
+	@Resource
+	private ConfUtils confUtils;
+	@Resource
+	private RedisService redisService;
 
 
 
@@ -158,6 +173,42 @@ public class LoginController {
 		}
 		return respBody;
 	}
+
+
+
+	@PostMapping("/updatePw")
+	public RespBody updatePw(@RequestBody UpdatePwVo updatePwVo){
+		RespBody respBody = new RespBody();
+		try {
+			if(!updatePwVo.getNewPw().equals(updatePwVo.getOkPw())){
+				respBody.add(RespCodeEnum.ERROR.getCode(), "新密码和确认密码不一致");
+				return respBody;
+			}
+			String token = request.getHeader("token");
+			//读取用户信息
+			SysUserVo userVo = userService.SysUserVo(token);
+			// 对输入密码进行加密
+			String oldPw = CryptUtils.hmacSHA1Encrypt(updatePwVo.getOldPw(), userVo.getSalt());
+			if(userVo.getPassword().equals(oldPw)){
+				//对新密码进行加密
+				String newPw = CryptUtils.hmacSHA1Encrypt(updatePwVo.getNewPw(), userVo.getSalt());
+				//旧密码正确，调用业务层执行密码更新
+				userService.updatePw(newPw,userVo.getId());
+				respBody.add(RespCodeEnum.SUCCESS.getCode(), "修改密码成功");
+				//更新redis数据
+				userVo.setPassword(newPw);
+				redisService.putObj(token, userVo, confUtils.getSessionTimeout());
+			}else{
+				//旧密码输入有误
+				respBody.add(RespCodeEnum.ERROR.getCode(), "旧密码输入不正确");
+			}
+		} catch (Exception ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), "修改密码失败");
+			LogUtils.error("修改密码失败！",ex);
+		}
+		return respBody;
+	}
+
 
 	//aaa
 	@PostMapping("/updateName")

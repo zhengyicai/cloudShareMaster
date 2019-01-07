@@ -11,7 +11,9 @@ import javax.annotation.Resource;
 
 import com.qzi.cms.common.po.UseCommunityPo;
 import com.qzi.cms.common.vo.CommunityAdminVo;
+import com.qzi.cms.common.vo.UseLockRecordVo;
 import com.qzi.cms.server.service.web.CommunityService;
+import com.qzi.cms.server.service.web.WebLockRecordService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,6 +46,11 @@ public class EquipmentController {
 
 	@Resource
 	private CommunityService communityService;
+
+
+	@Resource
+	private WebLockRecordService webLockRecordService;
+
 
 	@GetMapping("/findCommunitys")
 	public RespBody findCommunitys(){
@@ -194,6 +201,32 @@ public class EquipmentController {
 			}
 			return respBody;
 		}
+
+	@GetMapping("/lockFindAll")
+	public RespBody lockFindAll(Paging paging,String criteria,String sysUserId,String communityId){
+		RespBody respBody = new RespBody();
+		try {
+			//保存返回数据
+
+			UseLockRecordVo vo = new UseLockRecordVo();
+			vo.setMobile(criteria);
+			vo.setUserId(sysUserId);
+			vo.setCommunityId(communityId);
+
+			List<UseLockRecordVo> list =  webLockRecordService.findAll(vo,paging);
+
+
+			respBody.add(RespCodeEnum.SUCCESS.getCode(), "查找所有开锁记录成功", list);
+			//保存分页对象
+			paging.setTotalCount(webLockRecordService.findCount(vo));
+			respBody.setPage(paging);
+		} catch (Exception ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), "查找所有开锁记录失败");
+			LogUtils.error("查找所有开锁记录失败！",ex);
+		}
+		return respBody;
+	}
+
 
 
 }

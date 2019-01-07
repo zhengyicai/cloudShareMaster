@@ -14,6 +14,35 @@ public class HomeUserCommunityVo {
     private String communityName; //小区名字
     private String roomId; //房间Id
     private  String  userName; //用户名
+    private  String userId;  //用户id
+    private String adminMobile; //物业电话
+
+    private String residentId; //用户id
+
+
+    public String getResidentId() {
+        return residentId;
+    }
+
+    public void setResidentId(String residentId) {
+        this.residentId = residentId;
+    }
+
+    public String getAdminMobile() {
+        return adminMobile;
+    }
+
+    public void setAdminMobile(String adminMobile) {
+        this.adminMobile = adminMobile;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 
     public String getUserName() {
         return userName;

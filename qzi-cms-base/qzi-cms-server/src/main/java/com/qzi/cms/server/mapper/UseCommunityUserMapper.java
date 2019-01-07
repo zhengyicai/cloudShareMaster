@@ -28,4 +28,8 @@ public interface UseCommunityUserMapper extends BaseMapper<UseCommunityUserPo>{
 	@Select("delete from use_community_user where communityId = #{cid}")
 	public void deleteForRid(@Param("cid") String communityId);
 
+
+	@Select("select * from use_community_user where userId = #{userId} limit 1")
+	public  UseCommunityUserPo  findOne(@Param("userId") String userId	);
+
 }

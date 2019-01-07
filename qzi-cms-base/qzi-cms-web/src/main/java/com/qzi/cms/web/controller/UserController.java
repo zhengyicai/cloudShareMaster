@@ -10,6 +10,8 @@ package com.qzi.cms.web.controller;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 
+import com.qzi.cms.common.po.UseCommunityUserPo;
+import com.qzi.cms.server.mapper.UseCommunityUserMapper;
 import com.qzi.cms.server.service.web.CommunityService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,7 +49,9 @@ public class UserController {
 	private RedisService redisService;
 	@Resource
 	private CommunityService communityService;
-	
+
+	@Resource
+	private UseCommunityUserMapper useCommunityUserMapper;
 	@GetMapping("/findUser")
 	private RespBody findUser(){
 		RespBody respBody = new RespBody();
@@ -55,10 +59,21 @@ public class UserController {
 			String token = request.getHeader("token");
 			//读取用户信息
 			SysUserVo userVo = userService.SysUserVo(token);
+
 			//用户是否存在
 			if(userVo != null){
 				userVo.setPassword("");
 				userVo.setSalt("");
+
+
+				UseCommunityUserPo useCpo =  useCommunityUserMapper.findOne(userVo.getId());
+
+				if(useCpo == null){
+					userVo.setCommunityId("");
+				}else{
+					userVo.setCommunityId( useCommunityUserMapper.findOne(userVo.getId()).getCommunityId());
+				}
+
 				//存在
 				respBody.add(RespCodeEnum.SUCCESS.getCode(), "获取用户信息成功",userVo);
 			}else{
@@ -106,6 +121,21 @@ public class UserController {
 		}
 		return respBody;
 	}
+
+	@GetMapping("/findMax")
+	public RespBody findMax(String parentId){
+		RespBody respBody = new RespBody();
+		try {
+			//保存返回数据
+			respBody.add(RespCodeEnum.SUCCESS.getCode(), "查找所有用户信息数据成功", userService.maxCode(parentId));
+
+		} catch (Exception ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), "查找所有用户信息数据失败");
+			LogUtils.error("查找所有用户信息数据失败！",ex);
+		}
+		return respBody;
+	}
+
 
 	@GetMapping("/findAllWorkChild")
 	public RespBody findAllWorkChild(String parentId,Paging paging){

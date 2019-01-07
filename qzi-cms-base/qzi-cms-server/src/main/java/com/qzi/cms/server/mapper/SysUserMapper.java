@@ -58,6 +58,10 @@ public interface SysUserMapper extends BaseMapper<SysUserPo>{
 	public List<TreeVo>  findTree(@Param("userId") String userId);
 
 
+
+	@Select("select max(code) from sys_user where parentId = #{parentId}")
+	public Integer maxCode(@Param("parentId") String parentId);
+
 	/**
 	 * 查总记录数
 	 * @return
