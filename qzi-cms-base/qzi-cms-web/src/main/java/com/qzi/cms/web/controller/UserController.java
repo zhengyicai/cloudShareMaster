@@ -265,11 +265,18 @@ public class UserController {
 		try {
 
 			SysUserVo findUser = userService.findByLoginName(userVo.getLoginName());
+
 			if(findUser == null){
 				userService.update(userVo);
 				respBody.add(RespCodeEnum.SUCCESS.getCode(), "用户信息修改成功");
 			}else{
-				respBody.add(RespCodeEnum.ERROR.getCode(), "登录名已经存在");
+				if(findUser.getId().equals(userVo.getId())){
+					userService.update(userVo);
+					respBody.add(RespCodeEnum.SUCCESS.getCode(), "用户信息修改成功");
+				}else{
+					respBody.add(RespCodeEnum.ERROR.getCode(), "登录名已经存在");
+				}
+
 			}
 
 		} catch (Exception ex) {
