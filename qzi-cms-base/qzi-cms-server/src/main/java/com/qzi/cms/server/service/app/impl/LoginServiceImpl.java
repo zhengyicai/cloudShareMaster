@@ -19,6 +19,7 @@ import com.qzi.cms.common.util.YBBeanUtils;
 import com.qzi.cms.common.vo.SysUserVo;
 import com.qzi.cms.server.mapper.SysUserMapper;
 import com.qzi.cms.server.mapper.UseCommunityResidentMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.qzi.cms.common.exception.CommException;
@@ -72,12 +73,34 @@ public class LoginServiceImpl implements LoginService {
 				String key = ToolUtils.getUUID();
 				//将对象转换成序列化对象
 				// 登录成功,将用户信息存储到redis中
-				if (!redisService.putObj(key, resident, confUtils.getSessionTimeout()).equalsIgnoreCase("ok")) {
+
+
+				String token_key = redisService.getString(resident.getId());
+				if (!StringUtils.isEmpty(token_key)) {
+					//删除token_key值
+					redisService.expire(token_key,1);
+					redisService.del(token_key);
+				}
+
+
+				if (!redisService.putString(resident.getId(),key, confUtils.getSessionTimeout()).equalsIgnoreCase("ok")) {
 					// 缓存用户信息失败
 					throw new CommException("缓存用户信息失败！");
-				} else {
-					token = key;
+				}else{
+					if (!redisService.putObj(key, resident, confUtils.getSessionTimeout()).equalsIgnoreCase("ok")) {
+						// 缓存用户信息失败
+						throw new CommException("缓存用户信息失败！");
+					} else {
+						token = key;
+					}
 				}
+
+
+
+
+
+
+
 			} else {
 				// 登录失败
 				throw new CommException("登录密码错误！");
