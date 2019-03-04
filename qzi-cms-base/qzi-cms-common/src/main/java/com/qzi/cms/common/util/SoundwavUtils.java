@@ -388,12 +388,16 @@ public class SoundwavUtils {
     //---------------采用计算法产生音频文件----------------------------
     public static boolean GenerateWaveFile2(String sFile,String sCommand)
     {
-        int sDataLen = (int)(2*SYNC_WIDTH+sCommand.length()*2*CODE_WIDTH);
+        int sDataLen = (int)(2*SYNC_WIDTH+sCommand.length()*2*CODE_WIDTH)+44100;
+
 
 
         try{
             FileOutputStream fout = new FileOutputStream(sFile);
             writeWaveFileHeader(fout,sDataLen,sDataLen+36,44100,1,16*44100/8);
+
+            byte[] dataNull = new byte[44100];
+            fout.write(dataNull);
 
             byte[] dataFreq = new byte[2];
             int j;

@@ -29,7 +29,46 @@ public class UseRoomCardVo {
     private Date createTime;
 
     private String cardNos;
+    private String oldcardNos;
 
+    private String countSum;
+
+    private String linkState;
+
+    private String roomNo;
+
+
+    public String getRoomNo() {
+        return roomNo;
+    }
+
+    public void setRoomNo(String roomNo) {
+        this.roomNo = roomNo;
+    }
+
+    public String getLinkState() {
+        return linkState;
+    }
+
+    public void setLinkState(String linkState) {
+        this.linkState = linkState;
+    }
+
+    public String getCountSum() {
+        return countSum;
+    }
+
+    public void setCountSum(String countSum) {
+        this.countSum = countSum;
+    }
+
+    public String getOldcardNos() {
+        return oldcardNos;
+    }
+
+    public void setOldcardNos(String oldcardNos) {
+        this.oldcardNos = oldcardNos;
+    }
 
     public String getUnitId() {
         return unitId;

@@ -20,6 +20,57 @@ public class HomeUserCommunityVo {
     private String residentId; //用户id
 
 
+
+
+    private String defaultRoomId; //默认房间Id
+    private String  equipmentId;  //设备id
+    private String cardId; //房卡Id
+    private String linkState; //设备发卡状态  10：已发 20:未发
+
+    private Integer equRoomState;//设备状态 10：已发，20：未发
+
+
+
+    public Integer getEquRoomState() {
+        return equRoomState;
+    }
+
+    public void setEquRoomState(Integer equRoomState) {
+        this.equRoomState = equRoomState;
+    }
+
+    public String getLinkState() {
+        return linkState;
+    }
+
+    public void setLinkState(String linkState) {
+        this.linkState = linkState;
+    }
+
+    public String getCardId() {
+        return cardId;
+    }
+
+    public void setCardId(String cardId) {
+        this.cardId = cardId;
+    }
+
+    public String getEquipmentId() {
+        return equipmentId;
+    }
+
+    public void setEquipmentId(String equipmentId) {
+        this.equipmentId = equipmentId;
+    }
+
+    public String getDefaultRoomId() {
+        return defaultRoomId;
+    }
+
+    public void setDefaultRoomId(String defaultRoomId) {
+        this.defaultRoomId = defaultRoomId;
+    }
+
     public String getResidentId() {
         return residentId;
     }

@@ -136,7 +136,7 @@ public class RoomServiceImpl implements RoomService {
 	public void addCard(UseRoomCardPo useRoomCardPo) {
 
 		useRoomCardPo.setState("10");
-		useRoomCardPo.setId(ToolUtils.getUUID());
+		//useRoomCardPo.setId(ToolUtils.getUUID());
 		useRoomCardPo.setCreateTime(new Date());
 
 

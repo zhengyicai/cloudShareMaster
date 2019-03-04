@@ -34,6 +34,11 @@ public interface UseUnitMapper extends BaseMapper<SysUnitPo>{
 	@Select("select * from use_unit where id = #{id}")
 	public SysUnitPo findOne(@Param("id") String id);
 
+
+
+	@Select("select * from use_unit where buildingId = #{buildingId} and unitNo=#{unitNo} limit 1")
+	public SysUnitVo findAllUnit(@Param("buildingId") String buildingId, @Param("unitNo") String unitNo);
+
 	@Update("update use_unit set state = #{model.state} where id = #{model.id}")
 	public void update(@Param("model") SysUnitPo SysUnitPo);
 

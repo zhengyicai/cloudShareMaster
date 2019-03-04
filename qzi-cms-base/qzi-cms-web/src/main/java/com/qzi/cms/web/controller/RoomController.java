@@ -9,9 +9,19 @@ package com.qzi.cms.web.controller;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.tools.Tool;
 
+import com.qzi.cms.common.po.UseCardEquipmentPo;
+import com.qzi.cms.common.po.UseEquipmentPo;
 import com.qzi.cms.common.po.UseRoomCardPo;
+import com.qzi.cms.common.po.UseRoomPo;
+import com.qzi.cms.common.util.ToolUtils;
+import com.qzi.cms.common.vo.UseEquipmentVo;
 import com.qzi.cms.common.vo.UseRoomCardVo;
+import com.qzi.cms.server.mapper.UseCardEquipmentMapper;
+import com.qzi.cms.server.mapper.UseEquipmentMapper;
+import com.qzi.cms.server.mapper.UseRoomCardMapper;
+import com.qzi.cms.server.mapper.UseRoomMapper;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,6 +36,9 @@ import com.qzi.cms.common.vo.SysUserVo;
 import com.qzi.cms.common.vo.UseRoomVo;
 import com.qzi.cms.server.service.web.RoomService;
 import com.qzi.cms.server.service.web.UserService;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  * 房间管理控制器
@@ -42,6 +55,17 @@ public class RoomController {
 	private UserService userService;
 	@Resource
 	private RoomService roomService;
+	@Resource
+	private UseCardEquipmentMapper useCardEquipmentMapper;
+
+	@Resource
+	private UseRoomCardMapper useRoomCardMapper;
+
+	@Resource
+	private UseRoomMapper useRoomMapper;
+
+	@Resource
+	private UseEquipmentMapper useEquipmentMapper;
 	
 	@GetMapping("/findTree")
 	public RespBody findTree(){
@@ -94,11 +118,26 @@ public class RoomController {
 		RespBody respBody = new RespBody();
 		try {
 			//查找数据并返回
-			respBody.add(RespCodeEnum.SUCCESS.getCode(), "获取房卡信息成功",roomService.cardList(roomId));
+			respBody.add(RespCodeEnum.SUCCESS.getCode(), "获取房卡信息成功",useRoomCardMapper.findRoomCardVo(roomId));
 
 		} catch (Exception ex) {
 			respBody.add(RespCodeEnum.ERROR.getCode(), "获取房卡信息异常");
 			LogUtils.error("获取房卡信息异常！",ex);
+		}
+		return respBody;
+	}
+
+
+	@GetMapping("/findCardEquipment")
+	public RespBody findCardEquipment(String cardId){
+		RespBody respBody = new RespBody();
+		try {
+			//查找数据并返回
+			respBody.add(RespCodeEnum.SUCCESS.getCode(), "获取设备号信息成功",useCardEquipmentMapper.findRoomCard(cardId));
+
+		} catch (Exception ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), "获取设备号信息异常");
+			LogUtils.error("获取设备号信息异常！",ex);
 		}
 		return respBody;
 	}
@@ -130,26 +169,129 @@ public class RoomController {
 	}
 
 
+
+
+
 	@PostMapping("/addCard")
 	public RespBody addCard(@RequestBody UseRoomCardVo useRoomCardVo){
 		RespBody respBody = new RespBody();
 		try {
 
 			UseRoomCardPo  po = new UseRoomCardPo();
-			roomService.deleteRoomId(useRoomCardVo.getRoomId());
 
-			String[] roomList = useRoomCardVo.getCardNos().split(",");
-			for(int i = 0 ;i<roomList.length;i++){
-				if(!("".equals(roomList[i]))){
-					po.setRoomId(useRoomCardVo.getRoomId());
-					po.setCardNo(Integer.parseInt(roomList[i]) );
-					po.setBuildingId(useRoomCardVo.getBuildingId());
-					po.setCommunityId(useRoomCardVo.getCommunityId());
-					po.setUnitId(useRoomCardVo.getUnitId());
-					roomService.addCard(po);
+
+
+			//string split的方法需要加一个，-1才能和js split方法一样，不然会自动忽略空的值
+			String[] roomList = useRoomCardVo.getCardNos().split(",",-1);
+			String[] oldroomList = useRoomCardVo.getOldcardNos().split(",",-1);
+
+
+			for(int i = 0;i<oldroomList.length;i++){
+				if(oldroomList[i].equals(roomList[i])){
+					//UseRoomCardPo po1 =   useRoomCardMapper.findCardName(useRoomCardVo.getRoomId(),roomList[i]);
+					//					if(po1!=null){
+					//						po1.set
+					//					}
+				}else{
+					//roomService.deleteRoomId(useRoomCardVo.getRoomId());
+
+					if(!("".equals(roomList[i]))) {
+
+
+						String id = ToolUtils.getUUID();
+						po.setId(id);
+						po.setRoomId(useRoomCardVo.getRoomId());
+						po.setCardNo(Integer.parseInt(roomList[i]));
+						po.setBuildingId(useRoomCardVo.getBuildingId());
+						po.setCommunityId(useRoomCardVo.getCommunityId());
+						po.setUnitId(useRoomCardVo.getUnitId());
+						try {
+							roomService.addCard(po);
+						}catch (Exception e){
+							respBody.add(RespCodeEnum.ERROR.getCode(), "房卡重复,请重新添加");
+							return respBody;
+
+						}
+						useRoomCardMapper.deleteCardId(useRoomCardVo.getRoomId(), oldroomList[i]);
+
+						UseRoomPo useRoomPo =  useRoomMapper.findOne(useRoomCardVo.getRoomId());
+						//System.out.print("@@@@@@@@@@@"+useRoomPo.getRoomNo().substring(0,10));
+						List<UseEquipmentPo> liste =   useEquipmentMapper.findUseEquipmentNo(useRoomPo.getRoomNo().substring(0,10));
+
+						if(liste.size()>0){
+							UseCardEquipmentPo  useCardPo = new UseCardEquipmentPo();
+							for(UseEquipmentPo epo:liste){
+
+
+								useCardPo.setId(ToolUtils.getUUID());
+								useCardPo.setEquId(epo.getEquId());
+								useCardPo.setEquipmentId(epo.getId());
+								useCardPo.setRoomId(useRoomCardVo.getRoomId());
+								useCardPo.setCardId(id);
+								useCardPo.setCreateTime( new Date());
+								useCardPo.setState("20");
+								useCardEquipmentMapper.insert(useCardPo);
+
+
+							}
+						}
+
+						//添加围墙机的数据
+						List<UseEquipmentPo> liste1 =   useEquipmentMapper.findUseEquipmentNo1(useRoomPo.getRoomNo().substring(0,6));
+						if(liste1.size()>0){
+							UseCardEquipmentPo  useCardPo = new UseCardEquipmentPo();
+							for(UseEquipmentPo epo:liste1){
+								useCardPo.setId(ToolUtils.getUUID());
+								useCardPo.setEquId(epo.getEquId());
+								useCardPo.setEquipmentId(epo.getId());
+								useCardPo.setRoomId(useRoomCardVo.getRoomId());
+								useCardPo.setCardId(id);
+								useCardPo.setCreateTime( new Date());
+								useCardPo.setState("20");
+								useCardEquipmentMapper.insert(useCardPo);
+
+
+							}
+						}
+
+
+
+
+
+
+
+
+					}else{
+						UseRoomCardPo useRoomCardPo =  useRoomCardMapper.findCardName(useRoomCardVo.getRoomId(), oldroomList[i]);
+						if(useRoomCardPo!=null){
+							if(useCardEquipmentMapper.findRoomCardCount(useRoomCardPo.getId())>0){
+								respBody.add(RespCodeEnum.ERROR.getCode(), "该卡号已绑定过设备，请先解绑");
+								return respBody;
+							}else{
+								useRoomCardMapper.deleteCardId(useRoomCardVo.getRoomId(), oldroomList[i]);
+							}
+
+
+						}
+
+					}
+
+
 				}
-
 			}
+
+
+//			for(int i = 0 ;i<roomList.length;i++){
+//				if(!("".equals(roomList[i]))){
+//					po.setRoomId(useRoomCardVo.getRoomId());
+//					po.setCardNo(Integer.parseInt(roomList[i]) );
+//					po.setBuildingId(useRoomCardVo.getBuildingId());
+//					po.setCommunityId(useRoomCardVo.getCommunityId());
+//					po.setUnitId(useRoomCardVo.getUnitId());
+//					roomService.addCard(po);
+//				}
+//
+//			}
 			respBody.add(RespCodeEnum.SUCCESS.getCode(), "房卡添加成功");
 
 		} catch (Exception ex) {

@@ -114,6 +114,41 @@ public class UseEquipmentVo {
 	 * 序列号
 	 */
 	private String  equId;
+	/**
+	 * 是否选中  //10;是， 20:否
+	 */
+	private  String  isSelected;
+
+
+
+	private String equCardState;  //设备与房卡绑定状态
+
+
+	private String unlockCount; //用户和设备未绑定状态
+
+	public String getUnlockCount() {
+		return unlockCount;
+	}
+
+	public void setUnlockCount(String unlockCount) {
+		this.unlockCount = unlockCount;
+	}
+
+	public String getEquCardState() {
+		return equCardState;
+	}
+
+	public void setEquCardState(String equCardState) {
+		this.equCardState = equCardState;
+	}
+
+	public String getIsSelected() {
+		return isSelected;
+	}
+
+	public void setIsSelected(String isSelected) {
+		this.isSelected = isSelected;
+	}
 
 	public String getEquCode() {
 		return equCode;

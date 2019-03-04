@@ -100,7 +100,7 @@ public interface UseEquipmentMapper extends BaseMapper<UseEquipmentPo>{
 
 	/**
 	 * 查询用户管理机
-	 * @param id
+	 * @param
 	 * @return
 	 */
 	@Select("SELECT DISTINCT ue.* from use_community_resident ucr,use_equipment ue "
@@ -114,8 +114,30 @@ public interface UseEquipmentMapper extends BaseMapper<UseEquipmentPo>{
 	@Select("select count(1) from use_equipment where communityId = #{communityId} and state = '10'")
 	public Integer communityIdCount(@Param("communityId") String communityId);
 
-	@Select("SELECT * from use_equipment where communityId=#{communityId} and state = '10'")
+	@Select("SELECT e.*,   IFNULL(e1.cnum,0) as unlockCount from use_equipment e left join (select count(1)  as cnum ,equipmentId from use_userCard_equipment u where state = '20' group by equipmentId) e1 on e.id = e1.equipmentId  where e.communityId=#{communityId} and e.state = '10'")
 	public List<UseEquipmentVo> communityIdList(@Param("communityId") String communityId);
+
+
+
+
+	@Select("SELECT e.*,IFNULL(u.count1,0) as unlockCount from use_equipment e  left join (select count(1) as count1,equipmentId from  use_card_equipment where roomId=#{roomId} and state='20' group by equipmentId )  u on e.id = u.equipmentId where e.equipmentId like '%${equipmentId}%'")
+	public List<UseEquipmentVo> appFindUseEquipmentNo(@Param("roomId") String roomId,@Param("equipmentId") String equipmentId);
+
+
+
+	@Select("SELECT * from use_equipment where equipmentId like '%${equipmentId}%'")
+	public List<UseEquipmentPo> findUseEquipmentNo(@Param("equipmentId") String equipmentId);
+
+
+
+
+	@Select("SELECT e.*,IFNULL(u.count1,0) as unlockCount from use_equipment e  left join (select count(1) as count1,equipmentId from  use_card_equipment where roomId=#{roomId} and state='20' group by equipmentId )  u on e.id = u.equipmentId where e.equipmentId like '%${equipmentId}%' and e.equipmentType='20'")
+	public List<UseEquipmentVo> appFindUseEquipmentNo1(@Param("roomId") String roomId,  @Param("equipmentId") String equipmentId);
+
+
+	//查询围墙机的数据
+	@Select("SELECT * from use_equipment where equipmentId like '%${equipmentId}%' and equipmentType='20'")
+	public List<UseEquipmentPo> findUseEquipmentNo1(@Param("equipmentId") String equipmentId);
 
 
 }

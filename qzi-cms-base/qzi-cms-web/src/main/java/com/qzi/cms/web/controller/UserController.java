@@ -9,10 +9,18 @@ package com.qzi.cms.web.controller;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.tools.Tool;
 
 import com.qzi.cms.common.po.UseCommunityUserPo;
+import com.qzi.cms.common.po.UseUserCardEquipmentPo;
+import com.qzi.cms.common.po.UseUserCardPo;
+import com.qzi.cms.common.util.ToolUtils;
+import com.qzi.cms.common.vo.UseUserCardVo;
 import com.qzi.cms.server.mapper.UseCommunityUserMapper;
+import com.qzi.cms.server.mapper.UseUserCardEquipmentMapper;
+import com.qzi.cms.server.mapper.UseUserCardMapper;
 import com.qzi.cms.server.service.web.CommunityService;
+import org.apache.ibatis.session.RowBounds;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,6 +37,8 @@ import com.qzi.cms.common.util.LogUtils;
 import com.qzi.cms.common.vo.SysUserVo;
 import com.qzi.cms.common.vo.UpdatePwVo;
 import com.qzi.cms.server.service.web.UserService;
+
+import java.util.Date;
 
 /**
  * 用户控制器
@@ -52,6 +62,14 @@ public class UserController {
 
 	@Resource
 	private UseCommunityUserMapper useCommunityUserMapper;
+
+	@Resource
+	private UseUserCardMapper useUserCardMapper;
+
+
+	@Resource
+	private UseUserCardEquipmentMapper useUserCardEquipmentMapper;
+
 	@GetMapping("/findUser")
 	private RespBody findUser(){
 		RespBody respBody = new RespBody();
@@ -331,6 +349,146 @@ public class UserController {
 		}
 		return respBody;
 	}
+
+	/**
+	 * 查看物业房卡列表
+	 * @param paging
+	 * @return
+	 */
+	@GetMapping("/cardFindAll")
+	public RespBody cardFindAll(Paging paging,String userId){
+		RespBody respBody = new RespBody();
+		try {
+			//保存返回数据
+			RowBounds rwoBounds = new RowBounds(paging.getPageNumber(),paging.getPageSize());
+			respBody.add(RespCodeEnum.SUCCESS.getCode(), "查找所有用户信息数据成功", useUserCardMapper.findUserId(rwoBounds,userId));
+			//保存分页对象
+			paging.setTotalCount(userService.findCount());
+			respBody.setPage(paging);
+		} catch (Exception ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), "查找所有用户信息数据失败");
+			LogUtils.error("查找所有用户信息数据失败！",ex);
+		}
+		return respBody;
+	}
+
+	/**
+	 * 添加物业房卡列表
+	 * @param
+	 * @return
+	 */
+	@PostMapping("/addUserCard")
+	public RespBody addUserCard(@RequestBody UseUserCardVo useUserCardVo){
+		RespBody respBody = new RespBody();
+
+		if(useUserCardVo.getChoId().length>0){
+
+			UseUserCardPo  po = new UseUserCardPo();
+			String id = ToolUtils.getUUID();
+			po.setId(id);
+			po.setCommunityId(useUserCardVo.getCommunityId());
+			po.setCreateTime(new Date());
+			po.setState("10");
+			po.setUserId(useUserCardVo.getUserId());
+			po.setCardName(useUserCardVo.getCardName());
+			po.setCardNo(useUserCardVo.getCardNo());
+			useUserCardMapper.insert(po);
+			UseUserCardEquipmentPo useUserCardEquipmentPo = new UseUserCardEquipmentPo();
+			for(int i  = 0;i<useUserCardVo.getChoId().length;i++){
+				useUserCardEquipmentPo.setId(ToolUtils.getUUID());
+				useUserCardEquipmentPo.setCommunityId(useUserCardVo.getCommunityId());
+				useUserCardEquipmentPo.setCreateTime(new Date());
+				useUserCardEquipmentPo.setState("20");
+				useUserCardEquipmentPo.setUserCardId(id);
+				useUserCardEquipmentPo.setEquipmentId(useUserCardVo.getChoId()[i]);
+				useUserCardEquipmentMapper.insert(useUserCardEquipmentPo);
+			}
+
+		}
+		return respBody;
+	}
+
+
+	/**
+	 * 查看物业房卡设备列表
+	 * @param
+	 * @return
+	 */
+	@GetMapping("/cardEquipmentFindAll")
+	public RespBody cardEquipmentFindAll(String cardId){
+		RespBody respBody = new RespBody();
+		try {
+			//保存返回数据
+			respBody.add(RespCodeEnum.SUCCESS.getCode(), "查找所有管理员卡号数据成功", useUserCardEquipmentMapper.findRoomCard(cardId));
+		} catch (Exception ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), "查找所有管理员卡号数据失败");
+			LogUtils.error("查找所有用户信息数据失败！",ex);
+		}
+		return respBody;
+	}
+
+
+
+
+
+	/**
+	 * 修改物业房卡列表
+	 * @param
+	 * @return
+	 */
+	@PostMapping("/updateUserCard")
+	public RespBody updateUserCard(@RequestBody UseUserCardVo useUserCardVo){
+		RespBody respBody = new RespBody();
+
+		if(useUserCardVo.getChoId().length>0){
+
+
+			if(useUserCardEquipmentMapper.selectCardId(useUserCardVo.getId())>0){
+				respBody.add(RespCodeEnum.ERROR.getCode(), "该卡号应该绑定过设备，请先解绑");
+				return respBody;
+			}
+
+			useUserCardEquipmentMapper.deleteCardId(useUserCardVo.getId());
+			UseUserCardEquipmentPo useUserCardEquipmentPo = new UseUserCardEquipmentPo();
+			for(int i  = 0;i<useUserCardVo.getChoId().length;i++){
+				useUserCardEquipmentPo.setId(ToolUtils.getUUID());
+				useUserCardEquipmentPo.setCommunityId(useUserCardVo.getCommunityId());
+				useUserCardEquipmentPo.setCreateTime(new Date());
+				useUserCardEquipmentPo.setState("20");
+				useUserCardEquipmentPo.setUserCardId(useUserCardVo.getId());
+				useUserCardEquipmentPo.setEquipmentId(useUserCardVo.getChoId()[i]);
+				useUserCardEquipmentMapper.insert(useUserCardEquipmentPo);
+			}
+
+		}
+		return respBody;
+	}
+
+
+	/**
+	 * 删除物业房卡列表
+	 * @param
+	 * @return
+	 */
+	@PostMapping("/deleteUserCard")
+	public RespBody deleteUserCard(@RequestBody UseUserCardVo useUserCardVo){
+		RespBody respBody = new RespBody();
+
+		if(useUserCardEquipmentMapper.selectCardId(useUserCardVo.getId())>0){
+			respBody.add(RespCodeEnum.ERROR.getCode(), "该卡号应该绑定过设备，请先解绑");
+			return respBody;
+		}
+		useUserCardMapper.deleteId(useUserCardVo.getId());
+			//useUserCardEquipmentMapper.deleteCardId(useUserCardVo.getId());
+		respBody.add(RespCodeEnum.SUCCESS.getCode(), "删除成功");
+
+		return respBody;
+	}
+
+
+
+
+
 
 
 	

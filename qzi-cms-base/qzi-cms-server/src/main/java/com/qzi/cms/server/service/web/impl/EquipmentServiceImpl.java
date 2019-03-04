@@ -14,6 +14,8 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import com.qzi.cms.common.po.*;
+import com.qzi.cms.common.vo.*;
+import com.qzi.cms.server.mapper.*;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,14 +26,6 @@ import com.qzi.cms.common.resp.Paging;
 import com.qzi.cms.common.util.ToolUtils;
 import com.qzi.cms.common.util.YBBeanUtils;
 import com.qzi.cms.common.util.YzsClientUtils;
-import com.qzi.cms.common.vo.ClientRespVo;
-import com.qzi.cms.common.vo.ClientVo;
-import com.qzi.cms.common.vo.OptionVo;
-import com.qzi.cms.common.vo.SysUserVo;
-import com.qzi.cms.common.vo.UseEquipmentVo;
-import com.qzi.cms.server.mapper.UseBuildingMapper;
-import com.qzi.cms.server.mapper.UseCommunityMapper;
-import com.qzi.cms.server.mapper.UseEquipmentMapper;
 import com.qzi.cms.server.service.common.CommonService;
 import com.qzi.cms.server.service.web.EquipmentService;
 
@@ -53,6 +47,17 @@ public class EquipmentServiceImpl implements EquipmentService {
 	private UseEquipmentMapper equipmentMapper;
 	@Resource
 	private YzsClientUtils clientUtils;
+	@Resource
+	private UseUnitMapper useUnitMapper;
+	@Resource
+	private UseRoomCardMapper useRoomCardMapper;
+
+	@Resource
+	private UseCardEquipmentMapper useCardEquipmentMapper;
+
+
+	@Resource
+	private UseUserCardEquipmentMapper useUserCardEquipmentMapper;
 
 	@Override
 	public List<OptionVo> findCommunitys() throws Exception {
@@ -97,13 +102,63 @@ public class EquipmentServiceImpl implements EquipmentService {
 	public void add(UseEquipmentVo equipmentVo) throws Exception {
 		//保存设备信息
 		UseEquipmentPo equipmentPo = YBBeanUtils.copyProperties(equipmentVo, UseEquipmentPo.class);
-		equipmentPo.setId(ToolUtils.getUUID());
+		String equIe = ToolUtils.getUUID();
+		equipmentPo.setId(equIe);
 		equipmentPo.setCreateTime(new Date());
 		equipmentPo.setEquipmentId(generatorEquId(equipmentVo));
 		if(!EquipmentEnum.UNIT.getCode().equals(equipmentVo.getEquipmentType())){
 			equipmentPo.setBuildingId(null);
 			equipmentPo.setUnitName(null);
 		}
+
+		//设置围墙机的数据
+		if("20".equals(equipmentPo.getEquipmentType())){
+			List<UseRoomCardPo> cardList =  useRoomCardMapper.findCommunityId(equipmentPo.getCommunityId());
+			if(cardList.size()>0){
+				UseCardEquipmentPo equpo = new UseCardEquipmentPo();
+				for(UseRoomCardPo po2:cardList){
+
+					equpo.setId(ToolUtils.getUUID());
+					equpo.setRoomId(po2.getRoomId());
+					equpo.setCardId(po2.getId());
+					equpo.setEquipmentId(equIe);
+					equpo.setCreateTime(new Date());
+					equpo.setState("20");
+					equpo.setEquId(equipmentPo.getEquId());
+					useCardEquipmentMapper.insert(equpo);
+				}
+			}
+
+		//设置单元机的数据
+		}else if("30".equals(equipmentPo.getEquipmentType())){
+			SysUnitVo sysUnitVo =  useUnitMapper.findAllUnit(equipmentPo.getBuildingId(),String.format("%02d",equipmentPo.getUnitName()));
+			if(sysUnitVo!=null){
+
+				List<UseRoomCardPo> list = useRoomCardMapper.findUnitId(sysUnitVo.getId());
+				if(list.size()>0){
+					UseCardEquipmentPo equpo = new UseCardEquipmentPo();
+					for(UseRoomCardPo po1:list){
+						equpo.setId(ToolUtils.getUUID());
+						equpo.setRoomId(po1.getRoomId());
+						equpo.setCardId(po1.getId());
+						equpo.setEquipmentId(equIe);
+						equpo.setCreateTime(new Date());
+						equpo.setState("20");
+						equpo.setEquId(equipmentPo.getEquId());
+						useCardEquipmentMapper.insert(equpo);
+
+					}
+				}
+
+
+
+			}
+		}
+
+
+
+
+
 		equipmentMapper.insert(equipmentPo);
 
 
@@ -113,21 +168,26 @@ public class EquipmentServiceImpl implements EquipmentService {
 	@Transactional(rollbackFor=Exception.class)
 	public void delete(UseEquipmentVo equipmentVo) throws Exception {
 		//注销云之讯账户
-		ClientVo client = new ClientVo();
-		client.setUserId(equipmentVo.getEquipmentId());
-		clientUtils.deleteClient(client);
+	//	ClientVo client = new ClientVo();
+	//	client.setUserId(equipmentVo.getEquipmentId());
+    //		clientUtils.deleteClient(client);
 		//删除设备
 		equipmentMapper.deleteByPrimaryKey(equipmentVo.getId());
 	}
 
 	@Override
+	@Transactional(rollbackFor=Exception.class)
 	public void update(UseEquipmentVo equipmentVo) throws Exception {
-				UseEquipmentVo vo = equipmentMapper.findEquipmentInfo(equipmentVo.getEquipmentId());
+		//UseEquipmentVo vo = equipmentMapper.findEquipmentInfo(equipmentVo.getEquipmentId());
 		//保存设备信息
-		UseEquipmentPo equipmentPo = YBBeanUtils.copyProperties(vo, UseEquipmentPo.class);
+		UseEquipmentPo equipmentPo = YBBeanUtils.copyProperties(equipmentVo, UseEquipmentPo.class);
 		equipmentPo.setNowDate(new Date());
 		equipmentPo.setNowState(equipmentVo.getNowState());
 		equipmentMapper.updateByPrimaryKey(equipmentPo);
+
+		//修改设备与房卡的绑定状态
+		useUserCardEquipmentMapper.updateAllUserCardEquipment(equipmentVo.getEquCardState(),equipmentVo.getId());
+		useCardEquipmentMapper.updateAllCardEquipment(equipmentVo.getEquCardState(),equipmentVo.getId());
 	}
 
 	@Override

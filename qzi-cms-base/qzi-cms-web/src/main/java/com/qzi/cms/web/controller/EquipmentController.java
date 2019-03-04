@@ -106,8 +106,6 @@ public class EquipmentController {
 				  				  vo.setNowDateStatus("在线");
 				   }
 			  }
-
-
 		  }
 
 			respBody.add(RespCodeEnum.SUCCESS.getCode(), "查找所有设备数据成功", list);
@@ -181,6 +179,23 @@ public class EquipmentController {
 		}
 		return respBody;
 	}
+
+
+	@PostMapping("/update")
+	@SystemControllerLog(description="修改设备")
+	public RespBody update(@RequestBody UseEquipmentVo equipmentVo){
+		RespBody respBody = new RespBody();
+		try {
+			equipmentService.update(equipmentVo);
+			respBody.add(RespCodeEnum.SUCCESS.getCode(), "修改设备成功");
+		} catch (Exception ex) {
+			respBody.add(RespCodeEnum.ERROR.getCode(), "修改设备失败");
+			LogUtils.error("修改设备失败！",ex);
+		}
+		return respBody;
+	}
+
+
 
 
 	/**

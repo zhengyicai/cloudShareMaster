@@ -75,6 +75,11 @@ public class HomeServiceImpl implements HomeService {
 	@Resource
 	private SysUserMapper sysUserMapper;
 
+	@Resource
+	private UseCardEquipmentMapper useCardEquipmentMapper;
+
+	@Resource
+	private UseUserCardEquipmentMapper useUserCardEquipmentMapper;
 
 	@Override
 	public List<String> findBanners() {
@@ -136,8 +141,13 @@ public class HomeServiceImpl implements HomeService {
 					homeVo.setAdminMobile(sys.getMobile());
 				}
 
+				UseRoomPo useRoomPo =  useRoomMapper.findOne(useResidentRoomPo.getRoomId());
+				homeVo.setRoomId(useRoomPo.getRoomNo());
 
-				homeVo.setRoomId(useRoomMapper.findOne(useResidentRoomPo.getRoomId()).getRoomNo());
+				homeVo.setEquRoomState(useCardEquipmentMapper.findRoomIdCount(useRoomPo.getId()));
+
+				homeVo.setDefaultRoomId(useRoomPo.getId());
+
 			}else{
 
 			}
@@ -155,6 +165,7 @@ public class HomeServiceImpl implements HomeService {
 				homeVo.setUserId(sysUserVo.getId());
 				homeVo.setAdminMobile(sysUserVo.getMobile());
 				homeVo.setResidentId(sysUserVo.getId());
+				homeVo.setEquRoomState(useUserCardEquipmentMapper.findCommunityCount(useVo.getId()));
 			}
 
 		}
